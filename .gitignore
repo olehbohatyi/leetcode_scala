@@ -1,6 +1,18 @@
-*.class
-*.tasty
+# macOS system files
+.DS_Store
+
+# Scala / sbt / Metals / Bloop build artifacts
+target/
+project/target/
+project/project/
+project/metals.sbt
+.bsp/
+.metals/
+.scala-build/
+out/
+
+# Logs
 *.log
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# IntelliJ IDEA
+.idea
