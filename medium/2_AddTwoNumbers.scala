@@ -43,7 +43,9 @@ def addTwoNumbers(l1: ListNode, l2: ListNode): ListNode = {
   @tailrec
   def loop(reminder: Int, ln1: ListNode, ln2: ListNode, acc: ListNode): ListNode =
     (Option(ln1), Option(ln2)) match {
-      case (None, None)           => ListNode(acc.x + reminder, acc.next)
+      case (None, None)           =>
+        if (reminder == 0) acc
+        else ListNode(reminder, acc)
       case (Some(ln1), None)      =>
         val (res, add) = ln1.x + reminder match {
           case x if x >= 10 => (x % 10, 1)
@@ -77,6 +79,5 @@ def addTwoNumbers(l1: ListNode, l2: ListNode): ListNode = {
 @main def atn(): Unit =
   val node1 = ListNode(2, ListNode(4, ListNode(3, null)))
   val node2 = ListNode(5, ListNode(6, ListNode(4, null)))
-//  println(addTwoNumbers(new ListNode(0, null), new ListNode(0, null)))
   println(addTwoNumbers(new ListNode(0, null), new ListNode(0, null)))
   println(addTwoNumbers(node1, node2))
