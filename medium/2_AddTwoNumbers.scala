@@ -39,45 +39,97 @@ class ListNode(_x: Int = 0, _next: ListNode = null):
 
   override def toString: String = s"ListNode($x, ${Option(next).map(_.toString).getOrElse("")})"
 
-def addTwoNumbers(l1: ListNode, l2: ListNode): ListNode = {
-  @tailrec
-  def loop(reminder: Int, ln1: ListNode, ln2: ListNode, acc: ListNode): ListNode =
-    (Option(ln1), Option(ln2)) match {
-      case (None, None)           =>
-        if (reminder == 0) acc
-        else ListNode(reminder, acc)
-      case (Some(ln1), None)      =>
-        val (res, add) = ln1.x + reminder match {
-          case x if x >= 10 => (x % 10, 1)
-          case x => (x, 0)
-        }
-        loop(add, ln1.next, null, ListNode(res, acc))
-      case (None, Some(ln2))      =>
-        val (res, add) = ln2.x + reminder match {
-          case x if x >= 10 => (x % 10, 1)
-          case x => (x, 0)
-        }
-        loop(add, null, ln2.next, ListNode(res, acc))
-      case (Some(ln1), Some(ln2)) =>
-        val (res, add) = ln1.x + ln2.x + reminder match {
-          case x if x >= 10 => (x % 10, 1)
-          case x => (x, 0)
-        }
-        loop(add, ln1.next, ln2.next, ListNode(res, acc))
-    }
-  val res = loop(0, l1, l2, null)
-  @tailrec
-  def reverse(listNode: ListNode, acc: ListNode): ListNode =
-    Option(listNode) match {
-      case None => acc
-      case Some(s) => reverse(s.next, ListNode(s.x, acc))
-    }
+  override def equals(obj: Any): Boolean = obj match
+    case that: ListNode => this.x == that.x && this.next == that.next
+    case _ => false
 
-  reverse(res.next, ListNode(res.x, null))
-}
+  override def hashCode(): Int =
+    import scala.util.hashing.MurmurHash3
+    val nextHash = if next == null then 0 else next.hashCode()
+    MurmurHash3.mix(x.hashCode(), nextHash)
 
-@main def atn(): Unit =
-  val node1 = ListNode(2, ListNode(4, ListNode(3, null)))
-  val node2 = ListNode(5, ListNode(6, ListNode(4, null)))
-  println(addTwoNumbers(new ListNode(0, null), new ListNode(0, null)))
-  println(addTwoNumbers(node1, node2))
+def addTwoNumbersMut(l1: ListNode, l2: ListNode): ListNode =
+  val dummy = ListNode()
+  var cur   = dummy
+  var n1    = l1
+  var n2    = l2
+  var carry = 0
+
+  while n1 != null || n2 != null || carry > 0 do
+    val sum  = Option(n1).fold(0)(_.x) +
+      Option(n2).fold(0)(_.x) + carry
+    carry    = sum / 10
+    cur.next = ListNode(sum % 10)
+    cur      = cur.next
+    if n1 != null then n1 = n1.next
+    if n2 != null then n2 = n2.next
+
+  dummy.next
+
+def addTwoNumbersFP(l1: ListNode, l2: ListNode): ListNode =
+  @tailrec
+  def loop(n1: ListNode, n2: ListNode, carry: Int, acc: ListNode): ListNode =
+    (Option(n1), Option(n2)) match
+      case (None, None) if carry == 0 => acc
+      case _ =>
+        val sum = Option(n1).fold(0)(_.x) +
+          Option(n2).fold(0)(_.x) + carry
+        loop(
+          if n1 != null then n1.next else null,
+          if n2 != null then n2.next else null,
+          sum / 10,
+          ListNode(sum % 10, acc)
+        )
+
+  @tailrec
+  def reverse(node: ListNode, acc: ListNode): ListNode =
+    Option(node) match
+      case None    => acc
+      case Some(n) => reverse(n.next, ListNode(n.x, acc))
+
+  reverse(loop(l1, l2, 0, null), null)
+
+def twoNumbersFPScala3(l1: ListNode, l2: ListNode): ListNode =
+  def loop(n1: ListNode | Null, n2: ListNode | Null, carry: Int): ListNode | Null =
+    (n1, n2) match
+      case (null, null) if carry == 0 => null
+      case _ =>
+        val v1 = if n1 != null then n1.x else 0
+        val v2 = if n2 != null then n2.x else 0
+        val sum  = v1 + v2 + carry
+        val node = ListNode(sum % 10)
+        node.next = loop(
+          if n1 != null then n1.next else null,
+          if n2 != null then n2.next else null,
+          sum / 10
+        )
+        node
+  loop(l1, l2, 0)
+
+@main def addTwoNumbers(): Unit =
+  val ln11 = ListNode(2, ListNode(4, ListNode(3, null)))
+  val ln12 = ListNode(5, ListNode(6, ListNode(4, null)))
+  val out1 = ListNode(7, ListNode(0, ListNode(8, null)))
+
+  val ln21 = ListNode(0, null)
+  val ln22 = ListNode(0, null)
+  val out2 = ListNode(0, null)
+
+  val ln31 = ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, null)))))))
+  val ln32 = ListNode(9, ListNode(9, ListNode(9, ListNode(9, null))))
+  val out3 = ListNode(8, ListNode(9, ListNode(9, ListNode(9, ListNode(0, ListNode(0, ListNode(0, ListNode(1, null))))))))
+
+  val data = List(
+    (ln11 -> ln12) -> out1,
+    (ln21 -> ln22) -> out2,
+    (ln31 -> ln32) -> out3
+  )
+
+  val impl = List(addTwoNumbersMut, addTwoNumbersFP, twoNumbersFPScala3)
+
+  for
+    twoSumDef <- impl
+    ((ln1, ln2), expected) <- data
+  yield
+    assert:
+      twoSumDef(ln1, ln2) == expected
