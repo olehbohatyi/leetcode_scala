@@ -45,6 +45,7 @@ class ListNode(_x: Int = 0, _next: ListNode = null):
 
   override def hashCode(): Int =
     import scala.util.hashing.MurmurHash3
+    // BAD: Non-value field is accessed in 'hashCode()'
     val nextHash = if next == null then 0 else next.hashCode()
     MurmurHash3.mix(x.hashCode(), nextHash)
 
