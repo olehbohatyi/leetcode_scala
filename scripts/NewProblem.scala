@@ -1,10 +1,8 @@
-#!/usr/bin/env amm
 // Generate a new LeetCode problem file (.scala) from a built-in Scala 3 template.
-// Usage: amm NewProblem.sc <difficulty> <number> <title> [--template PATH] [--force] [--dry-run]
+// Usage: amm/scala/scala-cli NewProblem.scala [-- (for scala*)] <difficulty> <number> <title> [--template PATH] [--force] [--dry-run]
 
 import java.nio.file.{Files, Path, Paths}
 import java.nio.charset.StandardCharsets
-import $ivy.`com.lihaoyi::sourcecode:0.4.4`
 
 val VALID_DIFFICULTIES = Set("easy", "medium", "hard")
 
@@ -75,16 +73,12 @@ def scalaTemplate(number: Int, title: String, difficulty: Difficulty): String =
   s"""// LeetCode $number: $title ($diff)
      |// https://leetcode.com/problems/$urlSlug/
      |
-     |object $objectName:
-     |
      |  // TODO: implement solution
-     |  def solve(input: String): String = ???
      |
+     |@main def ${uncapitalize(objectName)}(): Unit = ???
      |
-     |@main def ${uncapitalize(objectName)}(): Unit =
-     |  println(s"LeetCode $number: $title")
-     |  val result = $objectName.solve("")
-     |  println(s"Result: $$result")
+     |  // TODO: validate solution with test cases
+     |
      |""".stripMargin
 
 @main def run(args: String*): Unit =
@@ -92,7 +86,7 @@ def scalaTemplate(number: Int, title: String, difficulty: Difficulty): String =
     case Left(err) =>
       System.err.println(s"Error: $err")
       System.err.println(
-        s"""Usage: amm NewProblem.sc <difficulty> <number> <title> [--template PATH] [--force] [--dry-run]
+        s"""Usage: amm/scala/scala-cli NewProblem.scala [-- (for scala*)] <difficulty> <number> <title> [--template PATH] [--force] [--dry-run]
            |  difficulty  one of: ${VALID_DIFFICULTIES.mkString(", ")}
            |  number      LeetCode problem number, e.g. 1
            |  title       Problem title, e.g. 'Two Sum'""".stripMargin)
@@ -104,10 +98,10 @@ def scalaTemplate(number: Int, title: String, difficulty: Difficulty): String =
         case (Some(diff), num, title) if num <= 0 =>
           System.err.println("Error: number must be a positive integer.")
         case (Some(diff), num, title) =>
-          val repoRoot   = os.Path(sourcecode.File()) / os.up / os.up
+          val repoRoot   = Paths.get("").toAbsolutePath.normalize()
           val objectName = toPascalCase(title)
           val filename   = f"${num}%04d_$objectName.scala"
-          val destDir    = Paths.get((repoRoot / "problems" / diff.toString.toLowerCase).toString)
+          val destDir    = repoRoot.resolve("problems").resolve(diff.toString.toLowerCase)
           val destPath   = destDir.resolve(filename)
 
           val content: String = cfg.template match
