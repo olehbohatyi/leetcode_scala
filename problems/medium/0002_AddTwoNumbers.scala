@@ -129,8 +129,8 @@ def twoNumbersFPScala3(l1: ListNode, l2: ListNode): ListNode =
   val impl = List(addTwoNumbersMut, addTwoNumbersFP, twoNumbersFPScala3)
 
   for
-    twoSumDef <- impl
+    addTwoNumbersDef       <- impl
     ((ln1, ln2), expected) <- data
-  yield
+  do
     assert:
-      twoSumDef(ln1, ln2) == expected
+      addTwoNumbersDef(ln1, ln2) == expected

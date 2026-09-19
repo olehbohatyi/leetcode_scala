@@ -35,8 +35,7 @@ def twoSumMut(nums: Array[Int], target: Int): Array[Int] =
   val seen = mutable.HashMap.empty[Int, Int]
   boundary:
     for ((num, i) <- nums.zipWithIndex) do
-      val complement = target - num
-      seen.get(complement) match
+      seen.get(target - num) match
         case Some(j) => break(Array(j, i))
         case None    => seen(num) = i
     Array.empty
@@ -45,8 +44,7 @@ def twoSumFP(nums: Array[Int], target: Int): Array[Int] =
   @tailrec
   def loop(index: Int, seen: HashMap[Int, Int]): Array[Int] =
     val num = nums(index)
-    val complement = target - num
-    seen.get(complement) match
+    seen.get(target - num) match
       case Some(j) => Array(j, index)
       case None    => loop(index + 1, seen + (num -> index))
   loop(0, HashMap.empty)
@@ -75,6 +73,6 @@ def twoSumFold(nums: Array[Int], target: Int): Array[Int] =
   for
     twoSumDef                  <- impl
     ((nums, target), expected) <- data
-  yield
+  do
     assert:
       twoSumDef(nums, target) sameElements expected
