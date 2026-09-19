@@ -1,3 +1,5 @@
+import scala.annotation.tailrec
+
 // 5. Longest Palindromic Substring
 
 // Given a string s, return the longest palindromic substring in s.
@@ -14,6 +16,17 @@
 // Constraints:
 // 1 <= s.length <= 1000
 // s consist of only digits and English letters.
+
+def longestPalindromicSubstringLoop(s: String): String =
+  if s.isEmpty then ""
+  else
+    var longest = ""
+    for i <- s.indices do
+      for j <- i until s.length do
+        val substring = s.substring(i, j + 1)
+        if substring == substring.reverse && substring.length > longest.length then
+          longest = substring
+    longest
 
 def longestPalindromicSubstringMut(s: String): String =
   def expandAroundCenter(s: String, left: Int, right: Int): Int =
@@ -38,6 +51,29 @@ def longestPalindromicSubstringMut(s: String): String =
 
     s.substring(start, end + 1)
 
+def longestPalindromicSubstringFP(s: String): String =
+  def expandAroundCenter(s: String, left: Int, right: Int): Int =
+    @tailrec
+    def loop(L: Int, R: Int): Int =
+      if L >= 0 && R < s.length && s(L) == s(R) then
+        loop(L - 1, R + 1)
+      else
+        R - L - 1
+    loop(left, right)
+
+  if s.isEmpty then ""
+  else
+    val (start, end) = s.indices.foldLeft((0, 0)):
+      case ((start, end), i) =>
+        val len1 = expandAroundCenter(s, i, i)
+        val len2 = expandAroundCenter(s, i, i + 1)
+        val len  = math.max(len1, len2)
+        if len > end - start then
+          (i - (len - 1) / 2, i + len / 2)
+        else
+          (start, end)
+
+    s.substring(start, end + 1)
 
 @main def longestPalindromicSubstring(): Unit =
 
@@ -49,7 +85,9 @@ def longestPalindromicSubstringMut(s: String): String =
   )
 
   val impl = List(
-      longestPalindromicSubstringMut
+      longestPalindromicSubstringLoop,
+      longestPalindromicSubstringMut,
+      longestPalindromicSubstringFP
     )
 
   for
@@ -58,4 +96,3 @@ def longestPalindromicSubstringMut(s: String): String =
   do
     assert:
       expected.contains(longestPalindromicSubstringDef(input))
-
