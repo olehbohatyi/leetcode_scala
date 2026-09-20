@@ -1,64 +1,49 @@
 # leetcode_scala
 
-Scala 3 project for solving LeetCode problems.
+My LeetCode solutions in Scala 3 (`3.9.0`, see [project.scala](project.scala)). Each problem is a self-contained
+script that carries its own description, several solution approaches, and assertions that check them.
 
 ## Structure
 
-- `problems/easy`, `problems/medium`, `problems/hard` — solution files grouped by difficulty
-- `src/leetcode/templates` — reusable Scala 3 starter template for new problems
-- `tests` — unit tests (e.g. with MUnit or ScalaTest)
-- `scripts` — utility scripts
-
-## File naming
-
-Files follow the Scala naming convention — `PascalCase.scala` with a zero-padded number prefix for ordering:
-
-- `problems/easy/0001_TwoSum.scala`
-- `problems/medium/0002_AddTwoNumbers.scala`
-
-## Quick start
-
-1. Create a new problem file in the appropriate difficulty folder using the generator (see below).
-2. Open the generated `.scala` file and implement your solution inside `object SolutionName`.
-3. Run the file with Scala CLI: `scala-cli run problems/easy/0001_TwoSum.scala`
-4. Optionally add tests in `tests/`.
-
-## Generated file structure
-
-Each generated file is a valid, runnable Scala 3 file:
-
-```scala
-// LeetCode 1: Two Sum (easy)
-// https://leetcode.com/problems/two-sum/
-
-object TwoSum:
-
-  // TODO: implement solution
-  def solve(input: String): String = ???
-
-
-@main def twoSum(): Unit =
-  println(s"LeetCode 1: Two Sum")
-  val result = TwoSum.solve("")
-  println(s"Result: $result")
+```
+problems/{easy,medium,hard}/   solution files, grouped by difficulty
+scripts/NewProblem.scala       generator for new problem files
+project.scala                  Scala CLI build config (Scala version)
 ```
 
-## Problem generator CLI
+Files are named `NNNN_PascalCaseTitle.scala`, with a zero-padded problem number, e.g. `0001_TwoSum.scala`.
 
-Use the Ammonite script to create new problem files automatically:
+## Anatomy of a solution file
+
+- A `#!/usr/bin/env -S scala shebang` line, so the file can be executed directly
+- The problem statement, examples and constraints as comments
+- One function per approach (e.g. loop, mutable, functional, index-based)
+- Test data plus `assert`s that run every approach against every case
+
+## Running a solution
+
+Requires [Scala CLI](https://scala-cli.virtuslab.org/).
 
 ```bash
-amm scripts/NewProblem.sc easy 1 "Two Sum"
-amm scripts/NewProblem.sc medium 2 "Add Two Numbers"
+scala-cli run problems/medium/0005_LongestPalindromicSubstring.scala
+# or, thanks to the shebang:
+chmod +x problems/medium/0005_LongestPalindromicSubstring.scala
+./problems/medium/0005_LongestPalindromicSubstring.scala
 ```
 
-Useful flags:
+A run that finishes silently means all assertions passed; a failure throws an `AssertionError`.
 
-- `--dry-run` — prints the destination path without creating a file
-- `--force` — overwrites an existing file
-- `--template PATH` — use a custom `.scala` template file instead of the built-in one
+## Creating a new problem
 
-## Requirements
+```bash
+scala-cli scripts/NewProblem.scala -- easy 1 "Two Sum"
+scala-cli scripts/NewProblem.scala -- medium 2 "Add Two Numbers"
+```
 
-- [Scala CLI](https://scala-cli.virtuslab.org/) — to run `.scala` files
-- [Ammonite](https://ammonite.io/) — to run the generator script (`amm`)
+Options:
+
+- `--dry-run` — print the destination path without creating a file
+- `--force` — overwrite an existing file
+- `--template PATH` — use a custom `.scala` template instead of the built-in one
+
+Then implement the solution in the generated file and add test cases.
