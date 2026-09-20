@@ -34,31 +34,75 @@
 // s consists of English letters (lower-case and upper-case), ',' and '.'.
 // 1 <= numRows <= 1000
 
-def zigzagConversionLazyList(s: String, numRows: Int): String =
+import scala.annotation.tailrec
+
+private def requireValid(s: String, numRows: Int): Unit =
   if s.isEmpty || numRows < 1 then
     throw new IllegalArgumentException("1 <= s.length <= 1000 and 1 <= numRows <= 1000")
+
+def zigzagConversionLazyList(s: String, numRows: Int): String =
+  requireValid(s, numRows)
   if numRows == 1 then
     return s
 
-  val arr = Array.fill(Math.min(numRows, s.length))("")
-  val idx = LazyList
+  val rows = Array.fill(Math.min(numRows, s.length))(StringBuilder())
+  val idx = Iterator
     .continually((0 until numRows) ++ (numRows - 2 until 0 by -1))
     .flatten
-    .take(s.length)
 
-  s.zip(idx).foreach { case (c, row) => arr(row) += c }
-  arr.mkString("")
+  s.zip(idx).foreach: (c, row) =>
+    rows(row).append(c)
+  rows.mkString
+
+def zigzagConversionIndexes(s: String, numRows: Int): String =
+  requireValid(s, numRows)
+  if numRows == 1 then
+    return s
+
+  val cycle = 2 * numRows - 2
+  val sb = StringBuilder()
+  for
+    row <- 0 until Math.min(numRows, s.length)
+    i   <- row until s.length by cycle
+  do
+    sb.append(s(i))
+    val diag = i + cycle - 2 * row
+    if row > 0 && row < numRows - 1 && diag < s.length then
+      sb.append(s(diag))
+  sb.toString
+
+def zigzagConversionTailrec(s: String, numRows: Int): String =
+  requireValid(s, numRows)
+  if numRows == 1 then
+    return s
+
+  @tailrec
+  def loop(i: Int, row: Int, step: Int, rows: Vector[String]): Vector[String] =
+    if i == s.length then rows
+    else
+      val nextStep =
+        if row == 0 then 1
+        else if row == numRows - 1 then -1
+        else step
+      loop(i + 1, row + nextStep, nextStep, rows.updated(row, rows(row) + s(i)))
+
+  loop(0, 0, 1, Vector.fill(numRows)("")).mkString
 
 @main def zigzagConversion(): Unit =
 
   val data = List(
     ("PAYPALISHIRING", 3) -> "PAHNAPLSIIGYIR",
     ("PAYPALISHIRING", 4) -> "PINALSIGYAHRPI",
-    ("A", 1) -> "A"
+    ("A", 1)              -> "A",
+    ("AB", 5)             -> "AB",
+    ("ABCD", 2)           -> "ACBD",
+    ("A,B.", 3)           -> "A,.B"
   )
 
   val impl = List(
-    zigzagConversionLazyList
+    zigzagConversionLazyList,
+    zigzagConversionIndexes,
+    zigzagConversionTailrec
   )
 
   for
