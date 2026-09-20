@@ -89,7 +89,7 @@ def longestPalindromicSubstringIndexes(s: String): String =
   else
     var map = mutable.Map.empty[Char, List[Int]]
     for i <- s.indices do
-      map += (s(i), i :: map.getOrElse(s(i), List.empty))
+      map.update(s(i), i :: map.getOrElse(s(i), List.empty))
     val (one, two) = map.partition(_._2.length <= 1)
     if (two.isEmpty) then
       return s.head.toString
@@ -131,9 +131,9 @@ def longestPalindromicSubstringIndexes(s: String): String =
   )
 
   val impl = List(
-      longestPalindromicSubstringLoop,
-      longestPalindromicSubstringMut,
-      longestPalindromicSubstringFP,
+      // longestPalindromicSubstringLoop,
+      // longestPalindromicSubstringMut,
+      // longestPalindromicSubstringFP,
       longestPalindromicSubstringIndexes
     )
 
@@ -142,4 +142,5 @@ def longestPalindromicSubstringIndexes(s: String): String =
     (input, expected)              <- data
   do
     assert:
+      println(s"input: $input, expected: $expected, actual: ${longestPalindromicSubstringDef(input)}")
       expected.contains(longestPalindromicSubstringDef(input))
