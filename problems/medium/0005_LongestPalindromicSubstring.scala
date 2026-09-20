@@ -1,3 +1,5 @@
+#!/usr/bin/env -S scala shebang
+
 import scala.annotation.tailrec
 import scala.collection.mutable
 
@@ -131,9 +133,9 @@ def longestPalindromicSubstringIndexes(s: String): String =
   )
 
   val impl = List(
-      // longestPalindromicSubstringLoop,
-      // longestPalindromicSubstringMut,
-      // longestPalindromicSubstringFP,
+      longestPalindromicSubstringLoop,
+      longestPalindromicSubstringMut,
+      longestPalindromicSubstringFP,
       longestPalindromicSubstringIndexes
     )
 
@@ -142,5 +144,4 @@ def longestPalindromicSubstringIndexes(s: String): String =
     (input, expected)              <- data
   do
     assert:
-      println(s"input: $input, expected: $expected, actual: ${longestPalindromicSubstringDef(input)}")
       expected.contains(longestPalindromicSubstringDef(input))

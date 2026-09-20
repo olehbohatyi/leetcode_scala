@@ -1,3 +1,5 @@
+#!/usr/bin/env -S scala shebang
+
 import scala.annotation.tailrec
 
 //  2. Add Two Numbers

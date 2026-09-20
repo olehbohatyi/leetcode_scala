@@ -1,3 +1,5 @@
+#!/usr/bin/env -S scala shebang
+
 import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
 import scala.collection.mutable
