@@ -1,4 +1,5 @@
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 // 5. Longest Palindromic Substring
 
@@ -75,19 +76,65 @@ def longestPalindromicSubstringFP(s: String): String =
 
     s.substring(start, end + 1)
 
+def longestPalindromicSubstringIndexes(s: String): String =
+  def isPal(i: Int, j: Int): Boolean =
+    var left = i
+    var right = j
+    while left < right && s(left) == s(right) do
+      left += 1
+      right -= 1
+    left >= right
+
+  if s.length <= 1 then return s
+  else
+    var map = mutable.Map.empty[Char, List[Int]]
+    for i <- s.indices do
+      map += (s(i), i :: map.getOrElse(s(i), List.empty))
+    val (one, two) = map.partition(_._2.length <= 1)
+    if (two.isEmpty) then
+      return s.head.toString
+    else
+      var start  = 0
+      var end    = 0
+      var length = 0
+      for indexes <- two.values do
+        if indexes.length == 2 &&
+          indexes.head - indexes(1) == 1 &&
+          length < 2 then
+          start = indexes(1)
+          end = indexes.head
+          length = indexes.length
+        else
+          for from <- indexes.tail do
+            for last <- indexes do
+              if last - from <= 1 then
+                if last - from + 1 > length then
+                  start = from
+                  end = last
+                  length = last - from + 1
+              else
+                if isPal(from, last) && last - from + 1 > length then
+                  start = from
+                  end = last
+                  length = last - from + 1
+      return s.substring(start, end + 1)
+
 @main def longestPalindromicSubstring(): Unit =
 
   val data = List(
-    "babad" -> Set("bab", "aba"),
-    "cbbd"  -> Set("bb"),
-    "a"     -> Set("a"),
-    "ac"    -> Set("a", "c")
+    "babad"  -> Set("bab", "aba"),
+    "baabad" -> Set("baab"),
+    "cbbd"   -> Set("bb"),
+    "a"      -> Set("a"),
+    "ac"     -> Set("a", "c"),
+    "abcde"  -> Set("a", "b", "c", "d", "e")
   )
 
   val impl = List(
       longestPalindromicSubstringLoop,
       longestPalindromicSubstringMut,
-      longestPalindromicSubstringFP
+      longestPalindromicSubstringFP,
+      longestPalindromicSubstringIndexes
     )
 
   for
