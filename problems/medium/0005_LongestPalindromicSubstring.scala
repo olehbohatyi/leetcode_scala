@@ -1,7 +1,6 @@
 #!/usr/bin/env -S scala shebang
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 
 // 5. Longest Palindromic Substring
 
@@ -87,39 +86,24 @@ def longestPalindromicSubstringIndexes(s: String): String =
       right -= 1
     left >= right
 
-  if s.length <= 1 then return s
+  if s.length <= 1 then s
   else
-    var map = mutable.Map.empty[Char, List[Int]]
-    for i <- s.indices do
-      map.update(s(i), i :: map.getOrElse(s(i), List.empty))
-    val (one, two) = map.partition(_._2.length <= 1)
-    if (two.isEmpty) then
-      return s.head.toString
-    else
-      var start  = 0
-      var end    = 0
-      var length = 0
-      for indexes <- two.values do
-        if indexes.length == 2 &&
-          indexes.head - indexes(1) == 1 &&
-          length < 2 then
-          start = indexes(1)
-          end = indexes.head
-          length = indexes.length
-        else
-          for from <- indexes.tail do
-            for last <- indexes do
-              if last - from <= 1 then
-                if last - from + 1 > length then
-                  start = from
-                  end = last
-                  length = last - from + 1
-              else
-                if isPal(from, last) && last - from + 1 > length then
-                  start = from
-                  end = last
-                  length = last - from + 1
-      return s.substring(start, end + 1)
+    val positions = s.indices.groupBy(s(_)).values.filter(_.length > 1)
+
+    var start  = 0
+    var length = 1
+
+    for indexes <- positions do
+      for
+        (from, a) <- indexes.zipWithIndex
+        last      <- indexes.drop(a + 1).reverseIterator
+        if last - from + 1 > length
+      do
+        if isPal(from, last) then
+          start = from
+          length = last - from + 1
+
+    s.substring(start, start + length)
 
 @main def longestPalindromicSubstring(): Unit =
 
