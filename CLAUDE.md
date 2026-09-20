@@ -11,11 +11,12 @@ LeetCode solutions in Scala 3 (version pinned in `project.scala`), built with [S
 ```bash
 # Run a solution (silent exit = all assertions passed; failure throws AssertionError)
 scala-cli run problems/medium/0005_LongestPalindromicSubstring.scala
+# Equivalent runners: `scala run <file>` and `amm <file>` (Ammonite, uses its own bundled Scala version)
 # Files have a shebang, so after chmod +x they can also be run directly
 ./problems/medium/0005_LongestPalindromicSubstring.scala
 
-# Create a new problem file (options: --dry-run, --force, --template PATH)
-scala-cli scripts/NewProblem.scala -- medium 2 "Add Two Numbers"
+# Create a new problem file (options: --dry-run, --force, --template PATH, --help)
+scala-cli scripts/Scaffold.scala -- medium 2 Add Two Numbers
 ```
 
 "Running a single test" means running that one file; there is no aggregate test command.
@@ -23,7 +24,7 @@ scala-cli scripts/NewProblem.scala -- medium 2 "Add Two Numbers"
 ## Structure and conventions
 
 - `problems/{easy,medium,hard}/NNNN_PascalCaseTitle.scala` — zero-padded problem number, grouped by difficulty.
-- `scripts/NewProblem.scala` generates new files from a built-in template; prefer it over hand-creating files so the layout stays consistent.
+- `scripts/Scaffold.scala` generates new files from a built-in template (`DefaultTemplate`, with `{{placeholders}}` filled by `render`); prefer it over hand-creating files so the layout stays consistent. Change the layout there when the convention evolves.
 - Each solution file follows the same layout:
   1. `#!/usr/bin/env -S scala shebang` line
   2. Problem statement, examples and constraints as `//` comments
