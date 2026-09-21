@@ -71,8 +71,8 @@ val DefaultTemplate: String =
     |// Constraints:
     |// TODO
 
-    |// One function per approach, named {{name}}<Approach>.
-    |def {{name}}Loop(input: Int): Int = ???
+    |// One function per approach, named {{name}}<Approach>. e.g. `Tailrec` or `Loop`.
+    |def {{name}}Approach(input: Int): Int = ???
 
     |@main def {{name}}(): Unit =
 
@@ -82,15 +82,15 @@ val DefaultTemplate: String =
     |  )
 
     |  val impl = List(
-    |    {{name}}Loop
+    |    {{name}}Approach
     |  )
 
     |  for
-    |    solution          <- impl
+    |    {{name}}Approach  <- impl
     |    (input, expected) <- data
     |  do
     |    assert:
-    |      solution(input) == expected
+    |      {{name}}Approach(input) == expected
     |""".stripMargin
 
 def render(template: String, cfg: Config): String =
