@@ -82,8 +82,11 @@ def stringToIntegerAtoiWhile(str: String): Int =
   if idx < str.length && str(idx) == '+' && pos then
     idx += 1
 
+  val max = Int.MaxValue / 10
+  val rem = Int.MaxValue % 10
+
   while idx < str.length && str(idx) >= '0' && str(idx) <= '9' do
-    if res > Int.MaxValue / 10 || (res == Int.MaxValue / 10 && (str(idx) - '0') > 7) then
+    if res > max || (res == max && (str(idx) - '0') > rem) then
       return if pos then Int.MaxValue else Int.MinValue
     res = res * 10 + (str(idx) - '0')
     idx += 1
