@@ -1,5 +1,8 @@
 #!/usr/bin/env -S scala shebang
 
+import scala.util.boundary
+import scala.util.boundary.break
+
 // 8. String to Integer (atoi)
 // Difficulty: Medium
 // https://leetcode.com/problems/string-to-integer-atoi/
@@ -95,26 +98,23 @@ def stringToIntegerAtoiWhile(str: String): Int =
 
 def stringToIntegerAtoiFold(str: String): Int =
 
-  if str.isEmpty then return 0
+  boundary:
+    val (res, pos, _) = str.foldLeft((0, true, false)):
+        case ((res, pos, started), c) =>
+          if !started && c == ' ' then (res, pos, false)
+          else if !started && c == '-' then (res, false, true)
+          else if !started && c == '+' then (res, true, true)
+          else if c >= '0' && c <= '9' then
+            val digit = c - '0'
+            val max = Int.MaxValue / 10
+            val rem = Int.MaxValue % 10
+            if res > max || (res == max && digit > rem) then
+              break(if pos then Int.MaxValue else Int.MinValue)
+            (res * 10 + digit, pos, true)
+          else if started then break(res * (if pos then 1 else -1))
+          else break(0)
 
-  val (res, pos) = str.foldLeft((0, true, false)) { case ((res, pos, started), c) =>
-    if !started && c == ' ' then (res, pos, false)
-    else if !started && c == '-' then (res, false, true)
-    else if !started && c == '+' then (res, true, true)
-    else if c >= '0' && c <= '9' then
-      val digit = c - '0'
-      val max = Int.MaxValue / 10
-      val rem = Int.MaxValue % 10
-      if res > max || (res == max && digit > rem) then
-        return if pos then Int.MaxValue else Int.MinValue
-      (res * 10 + digit, pos, true)
-    else if started then return res * (if pos then 1 else -1)
-    else return 0
-  } match {
-    case (res, pos, _) => (res, pos)
-  }
-
-  res * (if pos then 1 else -1)
+    res * (if pos then 1 else -1)
 
 @main def stringToIntegerAtoi(): Unit =
 
