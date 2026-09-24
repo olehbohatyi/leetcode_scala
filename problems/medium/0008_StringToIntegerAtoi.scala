@@ -1,5 +1,6 @@
 #!/usr/bin/env -S scala shebang
 
+import scala.annotation.tailrec
 import scala.util.boundary
 import scala.util.boundary.break
 
@@ -68,6 +69,26 @@ import scala.util.boundary.break
 // 0 <= s.length <= 200
 // s consists of English letters (lower-case and upper-case), digits (0-9), ' ', '+', '-', and '.'.
 
+def stringToIntegerAtoiFold(str: String): Int =
+
+  boundary:
+    val (res, pos, _) = str.foldLeft((0, true, false)):
+        case ((res, pos, started), c) =>
+          if !started && c == ' ' then (res, pos, false)
+          else if !started && c == '-' then (res, false, true)
+          else if !started && c == '+' then (res, true, true)
+          else if c >= '0' && c <= '9' then
+            val digit = c - '0'
+            val max = Int.MaxValue / 10
+            val rem = Int.MaxValue % 10
+            if res > max || (res == max && digit > rem) then
+              break(if pos then Int.MaxValue else Int.MinValue)
+            (res * 10 + digit, pos, true)
+          else if started then break(res * (if pos then 1 else -1))
+          else break(0)
+
+    res * (if pos then 1 else -1)
+
 def stringToIntegerAtoiWhile(str: String): Int =
 
   if str.isEmpty then return 0
@@ -96,44 +117,76 @@ def stringToIntegerAtoiWhile(str: String): Int =
 
   res * (if pos then 1 else -1)
 
-def stringToIntegerAtoiFold(str: String): Int =
+def stringToIntegerAtoiTailrec(str: String): Int =
 
-  boundary:
-    val (res, pos, _) = str.foldLeft((0, true, false)):
-        case ((res, pos, started), c) =>
-          if !started && c == ' ' then (res, pos, false)
-          else if !started && c == '-' then (res, false, true)
-          else if !started && c == '+' then (res, true, true)
-          else if c >= '0' && c <= '9' then
-            val digit = c - '0'
-            val max = Int.MaxValue / 10
-            val rem = Int.MaxValue % 10
-            if res > max || (res == max && digit > rem) then
-              break(if pos then Int.MaxValue else Int.MinValue)
-            (res * 10 + digit, pos, true)
-          else if started then break(res * (if pos then 1 else -1))
-          else break(0)
+  val max = Int.MaxValue / 10
+  val rem = Int.MaxValue % 10
 
-    res * (if pos then 1 else -1)
+  @tailrec
+  def go(idx: Int, res: Int, pos: Boolean, started: Boolean): Int =
+    val signed = res * (if pos then 1 else -1)
+    if idx == str.length then signed
+    else
+      val c = str(idx)
+      if !started && c == ' ' then go(idx + 1, res, pos, false)
+      else if !started && c == '-' then go(idx + 1, res, false, true)
+      else if !started && c == '+' then go(idx + 1, res, true, true)
+      else if c >= '0' && c <= '9' then
+        val digit = c - '0'
+        if res > max || (res == max && digit > rem) then
+          if pos then Int.MaxValue else Int.MinValue
+        else go(idx + 1, res * 10 + digit, pos, true)
+      else signed
+
+  go(0, 0, true, false)
+
+def stringToIntegerAtoiPipeline(str: String): Int =
+
+  val trimmed = str.dropWhile(_ == ' ')
+
+  val (pos, rest) = trimmed.headOption match
+    case Some('-') => (false, trimmed.tail)
+    case Some('+') => (true, trimmed.tail)
+    case _         => (true, trimmed)
+
+  val magnitude = rest
+    .takeWhile(c => c >= '0' && c <= '9')
+    .foldLeft(0L): (acc, c) =>
+      (acc * 10 + (c - '0')).min(Int.MaxValue + 1L)
+
+  (if pos then magnitude else -magnitude).max(Int.MinValue).min(Int.MaxValue).toInt
+
+def stringToIntegerAtoiRegex(str: String): Int =
+
+  val Pattern = """(?s) *([+-]?)(\d+).*""".r
+
+  str match
+    case Pattern(sign, digits) =>
+      val n = if sign == "-" then -BigInt(digits) else BigInt(digits)
+      n.max(BigInt(Int.MinValue)).min(BigInt(Int.MaxValue)).toInt
+    case _ => 0
 
 @main def stringToIntegerAtoi(): Unit =
 
   val data = List(
-    "   -042" -> -42,
-    "42" -> 42,
-    "1337c0d3" -> 1337,
-    "0-1" -> 0,
+    "   -042"       -> -42,
+    "42"            -> 42,
+    "1337c0d3"      -> 1337,
+    "0-1"           -> 0,
     "words and 987" -> 0,
-    "" -> 0,
-    "-" -> 0,
-    "+" -> 0,
-    "   " -> 0,
-    "2147483648" -> 2147483647,
+    ""              -> 0,
+    "-"             -> 0,
+    "+"             -> 0,
+    "   "           -> 0,
+    "2147483648"    -> 2147483647,
   )
 
   val impl = List(
+    stringToIntegerAtoiFold,
     stringToIntegerAtoiWhile,
-    stringToIntegerAtoiFold
+    stringToIntegerAtoiTailrec,
+    stringToIntegerAtoiPipeline,
+    stringToIntegerAtoiRegex,
   )
 
   for
