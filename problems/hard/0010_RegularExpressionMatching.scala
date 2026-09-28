@@ -35,17 +35,68 @@
 // It is guaranteed for each appearance of the character '*', there will be a
 // previous valid character to match.
 
-def regularExpressionMatchingSolution(s: String, p: String): Boolean =
+import scala.annotation.tailrec
+
+def regexCharactersMatch(patternChar: Char, inputChar: Char): Boolean =
+  patternChar == '.' || patternChar == inputChar
+
+def regularExpressionMatchingRecursive(s: String, p: String): Boolean =
   if p.isEmpty then s.isEmpty
-  else if p.length == 1 && p(0) == '*' then true
-  else if p.length == 1 && p(0) != '*' then s == p
   else if p.length >= 2 && p(1) == '*' then
-    val firstMatch = s.nonEmpty && (s(0) == p(0) || p(0) == '.')
-    regularExpressionMatchingSolution(s, p.drop(2)) ||
-      (firstMatch && regularExpressionMatchingSolution(s.drop(1), p))
+    val firstMatch = s.nonEmpty && regexCharactersMatch(p(0), s(0))
+    regularExpressionMatchingRecursive(s, p.drop(2)) ||
+      (firstMatch && regularExpressionMatchingRecursive(s.drop(1), p))
   else
-    s.nonEmpty && (s(0) == p(0) || p(0) == '.') &&
-      regularExpressionMatchingSolution(s.drop(1), p.drop(1))
+    s.nonEmpty && regexCharactersMatch(p(0), s(0)) &&
+      regularExpressionMatchingRecursive(s.drop(1), p.drop(1))
+
+def regularExpressionMatchingTailrec(s: String, p: String): Boolean =
+  val columns = p.length + 1
+  val table = Array.fill((s.length + 1) * columns)(false)
+  table(0) = true
+
+  @tailrec
+  def fill(index: Int): Boolean =
+    if index == table.length then table(index - 1)
+    else
+      val inputLength = index / columns
+      val patternLength = index % columns
+      if patternLength > 0 then
+        val patternChar = p(patternLength - 1)
+        if patternChar == '*' then
+          if patternLength >= 2 then
+            val repeatedChar = p(patternLength - 2)
+            table(index) = table(index - 2) ||
+              (inputLength > 0 && regexCharactersMatch(repeatedChar, s(inputLength - 1)) &&
+                table(index - columns))
+        else if inputLength > 0 then
+          table(index) = regexCharactersMatch(patternChar, s(inputLength - 1)) &&
+            table(index - columns - 1)
+      fill(index + 1)
+
+  fill(1)
+
+def regularExpressionMatchingFold(s: String, p: String): Boolean =
+  val initialRow = Array.fill(p.length + 1)(false)
+  initialRow(0) = true
+  val emptyInputRow = p.indices.foldLeft(initialRow): (row, patternIndex) =>
+    if p(patternIndex) == '*' then row(patternIndex + 1) = row(patternIndex - 1)
+    row
+
+  val finalRow = s.indices.foldLeft(emptyInputRow): (previousRow, inputIndex) =>
+    p.indices.foldLeft(Array.fill(p.length + 1)(false)): (currentRow, patternIndex) =>
+      val patternLength = patternIndex + 1
+      val patternChar = p(patternIndex)
+      if patternChar == '*' then
+        val repeatedChar = p(patternIndex - 1)
+        currentRow(patternLength) = currentRow(patternLength - 2) ||
+          (regexCharactersMatch(repeatedChar, s(inputIndex)) && previousRow(patternLength))
+      else
+        currentRow(patternLength) = regexCharactersMatch(patternChar, s(inputIndex)) &&
+          previousRow(patternLength - 1)
+      currentRow
+
+  finalRow(p.length)
 
 @main def regularExpressionMatching(): Unit =
 
@@ -53,11 +104,18 @@ def regularExpressionMatchingSolution(s: String, p: String): Boolean =
     ("aa", "a")  -> false,
     ("aa", "a*") -> true,
     ("ab", ".*") -> true,
-    ("a", "b*")  -> false
+    ("a", "b*")  -> false,
+    ("a", ".") -> true,
+    ("aab", "c*a*b") -> true,
+    ("mississippi", "mis*is*p*.") -> false,
+    ("", "a*b*") -> true,
+    ("", ".") -> false
   )
 
   val impl = List(
-    regularExpressionMatchingSolution
+    regularExpressionMatchingRecursive,
+    regularExpressionMatchingTailrec,
+    regularExpressionMatchingFold
   )
 
   for
