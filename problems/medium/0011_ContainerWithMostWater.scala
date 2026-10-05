@@ -1,5 +1,7 @@
 #!/usr/bin/env -S scala shebang
 
+import scala.annotation.tailrec
+
 // 11. Container With Most Water
 // Difficulty: Medium
 // https://leetcode.com/problems/container-with-most-water/
@@ -45,20 +47,59 @@ def containerWithMostWaterWhile(height: Array[Int]): Int =
 
   res
 
+def containerWithMostWaterTailrec(height: Array[Int]): Int =
+  @tailrec
+  def loop(l: Int, r: Int, res: Int): Int =
+    if l >= r then res
+    else
+      val lh = height(l)
+      val rh = height(r)
+      val max = (if lh < rh then lh else rh) * (r - l)
+      val nextRes = if res < max then max else res
+      if lh < rh then loop(l + 1, r, nextRes)
+      else loop(l, r - 1, nextRes)
+
+  loop(0, height.length - 1, 0)
+
+def containerWithMostWaterSkipShorter(height: Array[Int]): Int =
+  var l = 0
+  var r = height.length - 1
+  var res = 0
+
+  while l < r do
+    val lh = height(l)
+    val rh = height(r)
+    val max = (if lh < rh then lh else rh) * (r - l)
+    if max > res then res = max
+
+    if lh <= rh then
+      l += 1
+      while l < r && height(l) <= lh do l += 1
+    else
+      r -= 1
+      while l < r && height(r) <= rh do r -= 1
+
+  res
+
 @main def containerWithMostWater(): Unit =
 
   val data = List(
     Array(1, 8, 6, 2, 5, 4, 8, 3, 7) -> 49,
-    Array(1, 1) -> 1
+    Array(1, 1)                      -> 1,
+    Array(1, 2, 3, 4, 5)             -> 6,
+    Array(5, 4, 3, 2, 1)             -> 6,
+    Array(0, 0)                      -> 0
   )
 
   val impl = List(
-    containerWithMostWaterWhile
+    containerWithMostWaterWhile,
+    containerWithMostWaterTailrec,
+    containerWithMostWaterSkipShorter
   )
 
   for
     containerWithMostWaterDef <- impl
-    (height, expected) <- data
+    (height, expected)        <- data
   do
     assert:
       containerWithMostWaterDef(height) == expected
