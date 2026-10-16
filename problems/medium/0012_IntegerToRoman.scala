@@ -103,6 +103,41 @@ def integerToRomanPlaceValues(num: Int): String =
   sb.append(romanOnes(num % 10))
   sb.toString()
 
+private def appendRomanDigit(sb: StringBuilder, digit: Int, one: Char, five: Char, ten: Char): Unit =
+  if digit == 4 then sb.append(one).append(five)
+  else if digit == 9 then sb.append(one).append(ten)
+  else
+    var remainder = digit
+    if remainder >= 5 then
+      sb.append(five)
+      remainder -= 5
+    while remainder > 0 do
+      sb.append(one)
+      remainder -= 1
+
+def integerToRomanByDigit(num: Int): String =
+  val sb = new StringBuilder
+  var thousands = num / 1000
+  while thousands > 0 do
+    sb.append('M')
+    thousands -= 1
+  appendRomanDigit(sb, (num / 100) % 10, 'C', 'D', 'M')
+  appendRomanDigit(sb, (num / 10) % 10, 'X', 'L', 'C')
+  appendRomanDigit(sb, num % 10, 'I', 'V', 'X')
+  sb.toString()
+
+def integerToRomanNew(num: Int): String =
+  val sb = new StringBuilder
+  var n = num
+
+  for (value, numeral) <- romanNumerals do
+    val count = n / value
+    if count > 0 then
+      sb.append(numeral * count)
+      n -= value * count
+
+  sb.toString()
+
 @main def integerToRoman(): Unit =
 
   val data = List(
@@ -118,7 +153,8 @@ def integerToRomanPlaceValues(num: Int): String =
   val impl = List(
     integerToRomanWhile,
     integerToRomanRec,
-    integerToRomanPlaceValues
+    integerToRomanPlaceValues,
+    integerToRomanByDigit,
   )
 
   for
