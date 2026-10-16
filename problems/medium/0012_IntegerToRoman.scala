@@ -73,6 +73,11 @@ val romanNumerals = List(
   1    -> "I"
 )
 
+val romanThousands = Array("", "M", "MM", "MMM")
+val romanHundreds  = Array("", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM")
+val romanTens      = Array("", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC")
+val romanOnes      = Array("", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
+
 def integerToRomanWhile(num: Int): String =
   var n = num
   val sb = new StringBuilder
@@ -90,6 +95,14 @@ def integerToRomanRec(num: Int): String =
     val (value, numeral) = romanNumerals.find((value, _) => num >= value).get
     numeral + integerToRomanRec(num - value)
 
+def integerToRomanPlaceValues(num: Int): String =
+  val sb = new StringBuilder
+  sb.append(romanThousands(num / 1000))
+  sb.append(romanHundreds((num % 1000) / 100))
+  sb.append(romanTens((num % 100) / 10))
+  sb.append(romanOnes(num % 10))
+  sb.toString()
+
 @main def integerToRoman(): Unit =
 
   val data = List(
@@ -104,7 +117,8 @@ def integerToRomanRec(num: Int): String =
 
   val impl = List(
     integerToRomanWhile,
-    integerToRomanRec
+    integerToRomanRec,
+    integerToRomanPlaceValues
   )
 
   for
