@@ -67,6 +67,25 @@ def romanToIntegerLeftToRight(s: String): Int =
 
   total
 
+def romanToIntegerFold(s: String): Int =
+  s.zipWithIndex.foldLeft(0):
+    case (total, (char, index)) =>
+      val current = romanValue(char)
+      val next = if index + 1 < s.length then romanValue(s(index + 1)) else 0
+      total + (if current < next then -current else current)
+
+
+def romanToIntegerRecursive(s: String): Int =
+  if s.isEmpty then 0
+  else if s.length == 1 then romanValue(s.head)
+  else
+    val current = romanValue(s.head)
+    val next = romanValue(s(1))
+    if current < next then
+      romanToIntegerRecursive(s.drop(2)) + (next - current)
+    else
+      current + romanToIntegerRecursive(s.drop(1))
+
 @main def romanToInteger(): Unit =
 
   val data = List(
@@ -84,7 +103,9 @@ def romanToIntegerLeftToRight(s: String): Int =
 
   val impl = List(
     romanToIntegerRightToLeft,
-    romanToIntegerLeftToRight
+    romanToIntegerLeftToRight,
+    romanToIntegerFold,
+    romanToIntegerRecursive
   )
 
   for
