@@ -35,6 +35,20 @@ def longestCommonPrefixForZip(strs: Array[String]): String =
     val min = srt.head
     min.zipWithIndex.takeWhile((c, i) => srt.tail.forall(_.charAt(i) == c)).map(_._1).mkString
 
+def longestCommonPrefixFold(strs: Array[String]): String =
+  if strs.isEmpty then ""
+  else
+    val srt = strs.sortBy(_.length)
+    if srt.head.isEmpty then ""
+    else
+      srt.tail.foldLeft(srt.head):
+        case (m, w) if m.isEmpty        => m
+        case (m, w) if !w.startsWith(m) =>
+          var min = m
+          while !w.startsWith(min) do min = min.substring(0, min.length - 1)
+          min
+        case (m, _) => m
+
 @main def longestCommonPrefix(): Unit =
 
   val data = List(
@@ -54,7 +68,8 @@ def longestCommonPrefixForZip(strs: Array[String]): String =
 
   val impl = List(
     longestCommonPrefixForWhile,
-    longestCommonPrefixForZip
+    longestCommonPrefixForZip,
+    longestCommonPrefixFold
   )
 
   for
