@@ -61,18 +61,23 @@ val DefaultTemplate: String =
     |// Difficulty: {{difficulty}}
     |// https://leetcode.com/problems/{{slug}}/
 
-    |// TODO: paste the problem statement
+    |// TODO: paste the problem statement, examples and constraints from the LeetCode problem.
 
     |// Example 1:
     |// Input:
     |// Output:
     |// Explanation:
 
+    |// Example 2:
+    |// Input:
+    |// Output:
+    |// Explanation:
+    
     |// Constraints:
-    |// TODO
+    |// TODO: paste the constraints from the LeetCode problem.
 
-    |// One function per approach, named {{name}}<Approach>. e.g. `Tailrec` or `Loop`.
-    |def {{name}}Approach(input: Int): Int = ???
+    |// One function per approach, named {{name}}<Approach>. e.g. `{{name}}Tailrec` or `{{name}}Loop`.
+    |def {{name}}Approach(input: Any): Any = ???
 
     |@main def {{name}}(): Unit =
 
@@ -86,11 +91,11 @@ val DefaultTemplate: String =
     |  )
 
     |  for
-    |    {{name}}Approach  <- impl
-    |    (input, expected) <- data
+    |    {{name}}Def    <- impl
+    |    (input, check) <- data
     |  do
     |    assert:
-    |      {{name}}Approach(input) == expected
+    |      {{name}}Def(input) == check
     |""".stripMargin
 
 def render(template: String, cfg: Config): String =
@@ -128,13 +133,13 @@ def parseArgs(args: List[String]): Either[String, Config] =
   )
 
   def loop(rest: List[String], raw: Raw): Either[String, Raw] = rest match
-    case Nil                       => Right(raw)
-    case "--force" :: tail         => loop(tail, raw.copy(force = true))
-    case "--dry-run" :: tail       => loop(tail, raw.copy(dryRun = true))
-    case "--template" :: v :: tail => loop(tail, raw.copy(template = Some(Paths.get(v))))
-    case "--template" :: Nil       => Left("--template requires a value")
+    case Nil                             => Right(raw)
+    case "--force" :: tail               => loop(tail, raw.copy(force = true))
+    case "--dry-run" :: tail             => loop(tail, raw.copy(dryRun = true))
+    case "--template" :: v :: tail       => loop(tail, raw.copy(template = Some(Paths.get(v))))
+    case "--template" :: Nil             => Left("--template requires a value")
     case opt :: _ if opt.startsWith("-") => Left(s"unknown option: $opt")
-    case arg :: tail               => loop(tail, raw.copy(positional = raw.positional :+ arg))
+    case arg :: tail                     => loop(tail, raw.copy(positional = raw.positional :+ arg))
 
   for
     raw <- loop(args, Raw())
