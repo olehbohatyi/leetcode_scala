@@ -29,11 +29,8 @@ import scala.annotation.tailrec
 // 0 <= Node.val <= 9
 // It is guaranteed that the list represents a number that does not have leading zeros.
 
-/** Definition for singly-linked list.
-  * class ListNode(_x: Int = 0, _next: ListNode = null) {
-  *   var next: ListNode = _next
-  *   var x: Int = _x
-  * }
+/** Definition for singly-linked list. class ListNode(_x: Int = 0, _next: ListNode = null) { var next: ListNode = _next
+  * var x: Int = _x }
   */
 class ListNode(_x: Int = 0, _next: ListNode = null):
   var next: ListNode = _next

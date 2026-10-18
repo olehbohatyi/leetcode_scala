@@ -28,6 +28,13 @@ def longestCommonPrefixForWhile(strs: Array[String]): String =
     for str <- srt.tail do while !str.startsWith(min) do min = min.substring(0, min.length - 1)
     min
 
+def longestCommonPrefixForZip(strs: Array[String]): String =
+  if strs.isEmpty then ""
+  else
+    val srt = strs.sortBy(_.length)
+    val min = srt.head
+    min.zipWithIndex.takeWhile((c, i) => srt.tail.forall(_.charAt(i) == c)).map(_._1).mkString
+
 @main def longestCommonPrefix(): Unit =
 
   val data = List(
@@ -46,7 +53,8 @@ def longestCommonPrefixForWhile(strs: Array[String]): String =
   )
 
   val impl = List(
-    longestCommonPrefixForWhile
+    longestCommonPrefixForWhile,
+    longestCommonPrefixForZip
   )
 
   for
