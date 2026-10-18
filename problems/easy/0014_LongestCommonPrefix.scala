@@ -1,5 +1,9 @@
 #!/usr/bin/env -S scala shebang
 
+import scala.annotation.tailrec
+import scala.util.boundary
+import scala.util.boundary.break
+
 // 14. Longest Common Prefix
 // Difficulty: Easy
 // https://leetcode.com/problems/longest-common-prefix/
@@ -49,6 +53,19 @@ def longestCommonPrefixFold(strs: Array[String]): String =
           min
         case (m, _) => m
 
+def longestCommonPrefixIndex(strs: Array[String]): String =
+  if strs.isEmpty then ""
+  else
+    val srt = strs.sortBy(_.length)
+    var min = srt.head
+    if min.isEmpty then ""
+    else
+      boundary:
+        for str <- srt.tail do
+          if min(0) != str(0) then break("")
+          while min != str.substring(0, min.length) do min = min.substring(0, min.length - 1)
+        min
+
 @main def longestCommonPrefix(): Unit =
 
   val data = List(
@@ -69,7 +86,8 @@ def longestCommonPrefixFold(strs: Array[String]): String =
   val impl = List(
     longestCommonPrefixForWhile,
     longestCommonPrefixForZip,
-    longestCommonPrefixFold
+    longestCommonPrefixFold,
+    longestCommonPrefixIndex
   )
 
   for
