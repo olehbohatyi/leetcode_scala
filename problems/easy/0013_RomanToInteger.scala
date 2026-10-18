@@ -71,34 +71,31 @@ def romanToIntegerFold(s: String): Int =
   s.zipWithIndex.foldLeft(0):
     case (total, (char, index)) =>
       val current = romanValue(char)
-      val next = if index + 1 < s.length then romanValue(s(index + 1)) else 0
+      val next    = if index + 1 < s.length then romanValue(s(index + 1)) else 0
       total + (if current < next then -current else current)
-
 
 def romanToIntegerRecursive(s: String): Int =
   if s.isEmpty then 0
   else if s.length == 1 then romanValue(s.head)
   else
     val current = romanValue(s.head)
-    val next = romanValue(s(1))
-    if current < next then
-      romanToIntegerRecursive(s.drop(2)) + (next - current)
-    else
-      current + romanToIntegerRecursive(s.drop(1))
+    val next    = romanValue(s(1))
+    if current < next then romanToIntegerRecursive(s.drop(2)) + (next - current)
+    else current + romanToIntegerRecursive(s.drop(1))
 
 @main def romanToInteger(): Unit =
 
   val data = List(
-    "III"        -> 3,
-    "LVIII"      -> 58,
-    "MCMXCIV"    -> 1994,
-    "IV"         -> 4,
-    "IX"         -> 9,
-    "XL"         -> 40,
-    "XC"         -> 90,
-    "CD"         -> 400,
-    "CM"         -> 900,
-    "MMMCMXCIX"  -> 3999
+    "III"       -> 3,
+    "LVIII"     -> 58,
+    "MCMXCIV"   -> 1994,
+    "IV"        -> 4,
+    "IX"        -> 9,
+    "XL"        -> 40,
+    "XC"        -> 90,
+    "CD"        -> 400,
+    "CM"        -> 900,
+    "MMMCMXCIX" -> 3999
   )
 
   val impl = List(
@@ -110,7 +107,7 @@ def romanToIntegerRecursive(s: String): Int =
 
   for
     romanToIntegerDef <- impl
-    (input, expected) <- data
+    (input, check)    <- data
   do
     assert:
-      romanToIntegerDef(input) == expected
+      romanToIntegerDef(input) == check

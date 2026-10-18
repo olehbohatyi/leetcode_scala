@@ -37,44 +37,40 @@
 import scala.annotation.tailrec
 
 private def requireValid(s: String, numRows: Int): Unit =
-  if s.isEmpty || numRows < 1 then
-    throw new IllegalArgumentException("1 <= s.length <= 1000 and 1 <= numRows <= 1000")
+  if s.isEmpty || numRows < 1 then throw new IllegalArgumentException("1 <= s.length <= 1000 and 1 <= numRows <= 1000")
 
 def zigzagConversionLazyList(s: String, numRows: Int): String =
   requireValid(s, numRows)
-  if numRows == 1 then
-    return s
+  if numRows == 1 then return s
 
   val rows = Array.fill(Math.min(numRows, s.length))(StringBuilder())
-  val idx = Iterator
+  val idx  = Iterator
     .continually((0 until numRows) ++ (numRows - 2 until 0 by -1))
     .flatten
 
-  s.zip(idx).foreach: (c, row) =>
-    rows(row).append(c)
+  s.zip(idx)
+    .foreach: (c, row) =>
+      rows(row).append(c)
   rows.mkString
 
 def zigzagConversionIndexes(s: String, numRows: Int): String =
   requireValid(s, numRows)
-  if numRows == 1 then
-    return s
+  if numRows == 1 then return s
 
   val cycle = 2 * numRows - 2
-  val sb = StringBuilder()
+  val sb    = StringBuilder()
   for
     row <- 0 until Math.min(numRows, s.length)
     i   <- row until s.length by cycle
   do
     sb.append(s(i))
     val diag = i + cycle - 2 * row
-    if row > 0 && row < numRows - 1 && diag < s.length then
-      sb.append(s(diag))
+    if row > 0 && row < numRows - 1 && diag < s.length then sb.append(s(diag))
   sb.toString
 
 def zigzagConversionTailrec(s: String, numRows: Int): String =
   requireValid(s, numRows)
-  if numRows == 1 then
-    return s
+  if numRows == 1 then return s
 
   @tailrec
   def loop(i: Int, row: Int, step: Int, rows: Vector[String]): Vector[String] =
@@ -106,8 +102,8 @@ def zigzagConversionTailrec(s: String, numRows: Int): String =
   )
 
   for
-    zigzagConversionDef        <- impl
-    ((str, numRows), expected) <- data
+    zigzagConversionDef     <- impl
+    ((str, numRows), check) <- data
   do
     assert:
-      zigzagConversionDef(str, numRows) == expected
+      zigzagConversionDef(str, numRows) == check

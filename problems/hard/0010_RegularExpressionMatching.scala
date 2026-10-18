@@ -45,21 +45,21 @@ def regularExpressionMatchingRecursive(s: String, p: String): Boolean =
   else if p.length >= 2 && p(1) == '*' then
     val firstMatch = s.nonEmpty && regexCharactersMatch(p(0), s(0))
     regularExpressionMatchingRecursive(s, p.drop(2)) ||
-      (firstMatch && regularExpressionMatchingRecursive(s.drop(1), p))
+    (firstMatch && regularExpressionMatchingRecursive(s.drop(1), p))
   else
     s.nonEmpty && regexCharactersMatch(p(0), s(0)) &&
-      regularExpressionMatchingRecursive(s.drop(1), p.drop(1))
+    regularExpressionMatchingRecursive(s.drop(1), p.drop(1))
 
 def regularExpressionMatchingTailrec(s: String, p: String): Boolean =
   val columns = p.length + 1
-  val table = Array.fill((s.length + 1) * columns)(false)
+  val table   = Array.fill((s.length + 1) * columns)(false)
   table(0) = true
 
   @tailrec
   def fill(index: Int): Boolean =
     if index == table.length then table(index - 1)
     else
-      val inputLength = index / columns
+      val inputLength   = index / columns
       val patternLength = index % columns
       if patternLength > 0 then
         val patternChar = p(patternLength - 1)
@@ -86,7 +86,7 @@ def regularExpressionMatchingFold(s: String, p: String): Boolean =
   val finalRow = s.indices.foldLeft(emptyInputRow): (previousRow, inputIndex) =>
     p.indices.foldLeft(Array.fill(p.length + 1)(false)): (currentRow, patternIndex) =>
       val patternLength = patternIndex + 1
-      val patternChar = p(patternIndex)
+      val patternChar   = p(patternIndex)
       if patternChar == '*' then
         val repeatedChar = p(patternIndex - 1)
         currentRow(patternLength) = currentRow(patternLength - 2) ||
@@ -101,15 +101,15 @@ def regularExpressionMatchingFold(s: String, p: String): Boolean =
 @main def regularExpressionMatching(): Unit =
 
   val data = List(
-    ("aa", "a")  -> false,
-    ("aa", "a*") -> true,
-    ("ab", ".*") -> true,
-    ("a", "b*")  -> false,
-    ("a", ".") -> true,
-    ("aab", "c*a*b") -> true,
+    ("aa", "a")                   -> false,
+    ("aa", "a*")                  -> true,
+    ("ab", ".*")                  -> true,
+    ("a", "b*")                   -> false,
+    ("a", ".")                    -> true,
+    ("aab", "c*a*b")              -> true,
     ("mississippi", "mis*is*p*.") -> false,
-    ("", "a*b*") -> true,
-    ("", ".") -> false
+    ("", "a*b*")                  -> true,
+    ("", ".")                     -> false
   )
 
   val impl = List(
@@ -120,7 +120,7 @@ def regularExpressionMatchingFold(s: String, p: String): Boolean =
 
   for
     regularExpressionMatchingDef <- impl
-    ((s, p), expected) <- data
+    ((s, p), check)              <- data
   do
     assert:
-      regularExpressionMatchingDef(s, p) == expected
+      regularExpressionMatchingDef(s, p) == check

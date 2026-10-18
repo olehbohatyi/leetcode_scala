@@ -29,22 +29,21 @@ import scala.annotation.tailrec
 // 0 <= Node.val <= 9
 // It is guaranteed that the list represents a number that does not have leading zeros.
 
-/**
- * Definition for singly-linked list.
- * class ListNode(_x: Int = 0, _next: ListNode = null) {
- *   var next: ListNode = _next
- *   var x: Int = _x
- * }
- */
+/** Definition for singly-linked list.
+  * class ListNode(_x: Int = 0, _next: ListNode = null) {
+  *   var next: ListNode = _next
+  *   var x: Int = _x
+  * }
+  */
 class ListNode(_x: Int = 0, _next: ListNode = null):
   var next: ListNode = _next
-  var x: Int = _x
+  var x: Int         = _x
 
   override def toString: String = s"ListNode($x, ${Option(next).map(_.toString).getOrElse("")})"
 
   override def equals(obj: Any): Boolean = obj match
     case that: ListNode => this.x == that.x && this.next == that.next
-    case _ => false
+    case _              => false
 
   override def hashCode(): Int =
     import scala.util.hashing.MurmurHash3
@@ -60,11 +59,11 @@ def addTwoNumbersMut(l1: ListNode, l2: ListNode): ListNode =
   var carry = 0
 
   while n1 != null || n2 != null || carry > 0 do
-    val sum  = Option(n1).fold(0)(_.x) +
+    val sum = Option(n1).fold(0)(_.x) +
       Option(n2).fold(0)(_.x) + carry
-    carry    = sum / 10
+    carry = sum / 10
     cur.next = ListNode(sum % 10)
-    cur      = cur.next
+    cur = cur.next
     if n1 != null then n1 = n1.next
     if n2 != null then n2 = n2.next
 
@@ -75,7 +74,7 @@ def addTwoNumbersFP(l1: ListNode, l2: ListNode): ListNode =
   def loop(n1: ListNode, n2: ListNode, carry: Int, acc: ListNode): ListNode =
     (Option(n1), Option(n2)) match
       case (None, None) if carry == 0 => acc
-      case _ =>
+      case _                          =>
         val sum = Option(n1).fold(0)(_.x) +
           Option(n2).fold(0)(_.x) + carry
         loop(
@@ -97,9 +96,9 @@ def twoNumbersFPScala3(l1: ListNode, l2: ListNode): ListNode =
   def loop(n1: ListNode | Null, n2: ListNode | Null, carry: Int): ListNode | Null =
     (n1, n2) match
       case (null, null) if carry == 0 => null
-      case _ =>
-        val v1 = if n1 != null then n1.x else 0
-        val v2 = if n2 != null then n2.x else 0
+      case _                          =>
+        val v1   = if n1 != null then n1.x else 0
+        val v2   = if n2 != null then n2.x else 0
         val sum  = v1 + v2 + carry
         val node = ListNode(sum % 10)
         node.next = loop(
@@ -120,9 +119,13 @@ def twoNumbersFPScala3(l1: ListNode, l2: ListNode): ListNode =
   val ln22 = ListNode(0, null)
   val out2 = ListNode(0, null)
 
-  val ln31 = ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, null)))))))
+  val ln31 =
+    ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, ListNode(9, null)))))))
   val ln32 = ListNode(9, ListNode(9, ListNode(9, ListNode(9, null))))
-  val out3 = ListNode(8, ListNode(9, ListNode(9, ListNode(9, ListNode(0, ListNode(0, ListNode(0, ListNode(1, null))))))))
+  val out3 = ListNode(
+    8,
+    ListNode(9, ListNode(9, ListNode(9, ListNode(0, ListNode(0, ListNode(0, ListNode(1, null)))))))
+  )
 
   val data = List(
     (ln11 -> ln12) -> out1,
@@ -133,8 +136,8 @@ def twoNumbersFPScala3(l1: ListNode, l2: ListNode): ListNode =
   val impl = List(addTwoNumbersMut, addTwoNumbersFP, twoNumbersFPScala3)
 
   for
-    addTwoNumbersDef       <- impl
-    ((ln1, ln2), expected) <- data
+    addTwoNumbersDef    <- impl
+    ((ln1, ln2), check) <- data
   do
     assert:
-      addTwoNumbersDef(ln1, ln2) == expected
+      addTwoNumbersDef(ln1, ln2) == check

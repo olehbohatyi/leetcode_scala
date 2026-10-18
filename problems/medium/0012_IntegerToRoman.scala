@@ -38,7 +38,6 @@
 
 // Given an integer, convert it to a Roman numeral.
 
-
 // Example 1:
 // Input: num = 3749
 // Output: "MMMDCCXLIX"
@@ -79,7 +78,7 @@ val romanTens      = Array("", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX",
 val romanOnes      = Array("", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX")
 
 def integerToRomanWhile(num: Int): String =
-  var n = num
+  var n  = num
   val sb = new StringBuilder
 
   for (value, numeral) <- romanNumerals do
@@ -103,7 +102,13 @@ def integerToRomanPlaceValues(num: Int): String =
   sb.append(romanOnes(num % 10))
   sb.toString()
 
-private def appendRomanDigit(sb: StringBuilder, digit: Int, one: Char, five: Char, ten: Char): Unit =
+private def appendRomanDigit(
+    sb: StringBuilder,
+    digit: Int,
+    one: Char,
+    five: Char,
+    ten: Char
+): Unit =
   if digit == 4 then sb.append(one).append(five)
   else if digit == 9 then sb.append(one).append(ten)
   else
@@ -116,19 +121,19 @@ private def appendRomanDigit(sb: StringBuilder, digit: Int, one: Char, five: Cha
       remainder -= 1
 
 def integerToRomanByDigit(num: Int): String =
-  val sb = new StringBuilder
+  val sb        = new StringBuilder
   var thousands = num / 1000
   while thousands > 0 do
     sb.append('M')
     thousands -= 1
   appendRomanDigit(sb, (num / 100) % 10, 'C', 'D', 'M')
-  appendRomanDigit(sb, (num / 10) % 10, 'X', 'L', 'C')
-  appendRomanDigit(sb, num % 10, 'I', 'V', 'X')
+  appendRomanDigit(sb, (num / 10)  % 10, 'X', 'L', 'C')
+  appendRomanDigit(sb, num         % 10, 'I', 'V', 'X')
   sb.toString()
 
 def integerToRomanNew(num: Int): String =
   val sb = new StringBuilder
-  var n = num
+  var n  = num
 
   for (value, numeral) <- romanNumerals do
     val count = n / value
@@ -159,7 +164,7 @@ def integerToRomanNew(num: Int): String =
 
   for
     integerToRomanDef <- impl
-    (num, expected)   <- data
+    (num, check)      <- data
   do
     assert:
-      integerToRomanDef(num) == expected
+      integerToRomanDef(num) == check

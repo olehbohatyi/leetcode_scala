@@ -30,9 +30,9 @@ import scala.collection.mutable
 // s consists of English letters, digits, symbols and spaces.
 
 def longestSubstringWithoutRepeatingCharactersMut(s: String): Int =
-  val seen = mutable.HashMap.empty[Char, Int]
+  val seen  = mutable.HashMap.empty[Char, Int]
   var start = 0
-  var best = 0
+  var best  = 0
 
   for (i <- s.indices) do
     val chr = s(i)
@@ -45,24 +45,24 @@ def longestSubstringWithoutRepeatingCharactersMut(s: String): Int =
 
   best
 
-def longestSubstringWithoutRepeatingCharactersFold(input: String): Int = {
-  input.zipWithIndex.foldLeft((Map.empty[Char, Int], 0, 0)):
-    case ((map, start, best), (chr, idx)) =>
-      val newStart = map.get(chr) match {
-        case Some(prev) if prev >= start => prev + 1
-        case _ => start
-      }
-      val newBest = math.max(best, idx - newStart + 1)
-      (map.updated(chr, idx), newStart, newBest)
-  ._3
-}
+def longestSubstringWithoutRepeatingCharactersFold(input: String): Int =
+  input.zipWithIndex
+    .foldLeft((Map.empty[Char, Int], 0, 0)):
+      case ((map, start, best), (chr, idx)) =>
+        val newStart = map.get(chr) match {
+          case Some(prev) if prev >= start => prev + 1
+          case _                           => start
+        }
+        val newBest = math.max(best, idx - newStart + 1)
+        (map.updated(chr, idx), newStart, newBest)
+    ._3
 
 def longestSubstringWithoutRepeatingCharactersFP(s: String): Int =
   @tailrec
   def loop(index: Int, start: Int, best: Int, lastSeen: Map[Char, Int]): Int =
     if index == s.length then best
     else
-      val chr = s(index)
+      val chr      = s(index)
       val newStart =
         lastSeen.get(chr) match
           case Some(previous) if previous >= start => previous + 1
@@ -90,7 +90,7 @@ def longestSubstringWithoutRepeatingCharactersFP(s: String): Int =
 
   for
     longestSubstringWithoutRepeatingCharactersDef <- impl
-    (str, expected)                               <- data
+    (str, check)                                  <- data
   do
     assert:
-      longestSubstringWithoutRepeatingCharactersDef(str) == expected  
+      longestSubstringWithoutRepeatingCharactersDef(str) == check

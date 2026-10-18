@@ -57,7 +57,7 @@ def twoSumFold(nums: Array[Int], target: Int): Array[Int] =
     (Map.empty[Int, Int], Array.empty[Int])
   ):
     case (acc @ (_, found), _) if found.nonEmpty => acc
-    case ((seen, _), (num, i)) =>
+    case ((seen, _), (num, i))                   =>
       seen.get(target - num) match
         case Some(j) => (seen, Array(j, i))
         case None    => (seen + (num -> i), Array.empty)
@@ -66,16 +66,16 @@ def twoSumFold(nums: Array[Int], target: Int): Array[Int] =
 @main def twoSum(): Unit =
 
   val data = List(
-    (Array(2, 7, 11, 15) -> 9) -> Array(0,1),
-    (Array(3, 2, 4)      -> 6) -> Array(1,2),
-    (Array(3, 3)         -> 6) -> Array(0,1)
+    (Array(2, 7, 11, 15) -> 9) -> Array(0, 1),
+    (Array(3, 2, 4)      -> 6) -> Array(1, 2),
+    (Array(3, 3)         -> 6) -> Array(0, 1)
   )
 
   val impl = List(twoSumMut, twoSumFP, twoSumFold)
 
   for
-    twoSumDef                  <- impl
-    ((nums, target), expected) <- data
+    twoSumDef               <- impl
+    ((nums, target), check) <- data
   do
     assert:
-      twoSumDef(nums, target) sameElements expected
+      twoSumDef(nums, target) sameElements check

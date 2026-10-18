@@ -28,14 +28,12 @@ import scala.annotation.tailrec
 // 1 <= m + n <= 2000
 // -106 <= nums1[i], nums2[i] <= 106
 
-def medianOfTwoSortedArraysSort(nums1: Array[Int], nums2: Array[Int]): Double = 
+def medianOfTwoSortedArraysSort(nums1: Array[Int], nums2: Array[Int]): Double =
   val sorted = (nums1 ++ nums2).sorted
   val length = sorted.length
   val middle = length / 2
-  if length % 2 == 0 then
-    (sorted(middle - 1) + sorted(middle)) / 2.0
-  else
-    sorted(middle).toDouble
+  if length % 2 == 0 then (sorted(middle - 1) + sorted(middle)) / 2.0
+  else sorted(middle).toDouble
 
 def medianOfTwoSortedArraysBinary(nums1: Array[Int], nums2: Array[Int]): Double =
   val (small, large) =
@@ -71,16 +69,13 @@ def medianOfTwoSortedArraysBinary(nums1: Array[Int], nums2: Array[Int]): Double 
     if leftSmall <= rightLarge && leftLarge <= rightSmall then
       val leftMax = math.max(leftSmall, leftLarge)
 
-      if length % 2 == 1 then
-        return leftMax.toDouble
+      if length % 2 == 1 then return leftMax.toDouble
 
       val rightMin = math.min(rightSmall, rightLarge)
       return (leftMax.toDouble + rightMin) / 2.0
 
-    if leftSmall > rightLarge then
-      len = partitionSmall - 1
-    else
-      low = partitionSmall + 1
+    if leftSmall > rightLarge then len = partitionSmall - 1
+    else low = partitionSmall + 1
 
   throw IllegalArgumentException("Input arrays must be sorted")
 
@@ -97,10 +92,8 @@ def medianOfTwoSortedArraysFP(nums1: Array[Int], nums2: Array[Int]): Double =
       current: Int
   ): Double =
     if step > middle then
-      if length % 2 == 0 then
-        (previous.toDouble + current) / 2.0
-      else
-        current.toDouble
+      if length % 2 == 0 then (previous.toDouble + current) / 2.0
+      else current.toDouble
     else
       val takeFirst =
         index1 < nums1.length &&
@@ -121,7 +114,7 @@ def medianOfTwoSortedArraysFP(nums1: Array[Int], nums2: Array[Int]): Double =
   merge(0, 0, 0, 0, 0)
 
 @main def medianOfTwoSortedArrays(): Unit =
-  
+
   val data = List(
     (Array(1, 3) -> Array(2))    -> 2.0,
     (Array(1, 2) -> Array(3, 4)) -> 2.5
@@ -135,7 +128,7 @@ def medianOfTwoSortedArraysFP(nums1: Array[Int], nums2: Array[Int]): Double =
 
   for
     medianOfTwoSortedArraysDef <- impl
-    ((nums1, nums2), expected) <- data
+    ((nums1, nums2), check)    <- data
   do
     assert:
-      medianOfTwoSortedArraysDef(nums1, nums2) == expected
+      medianOfTwoSortedArraysDef(nums1, nums2) == check

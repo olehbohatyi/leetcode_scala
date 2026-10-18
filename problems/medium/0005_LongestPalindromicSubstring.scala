@@ -28,18 +28,17 @@ def longestPalindromicSubstringLoop(s: String): String =
     for i <- s.indices do
       for j <- i until s.length do
         val substring = s.substring(i, j + 1)
-        if substring == substring.reverse && substring.length > longest.length then
-          longest = substring
+        if substring == substring.reverse && substring.length > longest.length then longest = substring
     longest
 
 def longestPalindromicSubstringMut(s: String): String =
   def expandAroundCenter(s: String, left: Int, right: Int): Int =
-      var L = left
-      var R = right
-      while L >= 0 && R < s.length && s(L) == s(R) do
-        L -= 1
-        R += 1
-      R - L - 1 
+    var L = left
+    var R = right
+    while L >= 0 && R < s.length && s(L) == s(R) do
+      L -= 1
+      R += 1
+    R - L - 1
 
   if s.isEmpty then ""
   else
@@ -51,7 +50,7 @@ def longestPalindromicSubstringMut(s: String): String =
       val len  = math.max(len1, len2)
       if len > end - start then
         start = i - (len - 1) / 2
-        end   = i + len / 2
+        end = i + len / 2
 
     s.substring(start, end + 1)
 
@@ -59,10 +58,8 @@ def longestPalindromicSubstringFP(s: String): String =
   def expandAroundCenter(s: String, left: Int, right: Int): Int =
     @tailrec
     def loop(L: Int, R: Int): Int =
-      if L >= 0 && R < s.length && s(L) == s(R) then
-        loop(L - 1, R + 1)
-      else
-        R - L - 1
+      if L >= 0 && R < s.length && s(L) == s(R) then loop(L - 1, R + 1)
+      else R - L - 1
     loop(left, right)
 
   if s.isEmpty then ""
@@ -72,16 +69,14 @@ def longestPalindromicSubstringFP(s: String): String =
         val len1 = expandAroundCenter(s, i, i)
         val len2 = expandAroundCenter(s, i, i + 1)
         val len  = math.max(len1, len2)
-        if len > end - start then
-          (i - (len - 1) / 2, i + len / 2)
-        else
-          (start, end)
+        if len > end - start then (i - (len - 1) / 2, i + len / 2)
+        else (start, end)
 
     s.substring(start, end + 1)
 
 def longestPalindromicSubstringIndexes(s: String): String =
   def isPal(i: Int, j: Int): Boolean =
-    var left = i
+    var left  = i
     var right = j
     while left < right && s(left) == s(right) do
       left += 1
@@ -119,15 +114,15 @@ def longestPalindromicSubstringIndexes(s: String): String =
   )
 
   val impl = List(
-      longestPalindromicSubstringLoop,
-      longestPalindromicSubstringMut,
-      longestPalindromicSubstringFP,
-      longestPalindromicSubstringIndexes
-    )
+    longestPalindromicSubstringLoop,
+    longestPalindromicSubstringMut,
+    longestPalindromicSubstringFP,
+    longestPalindromicSubstringIndexes
+  )
 
   for
     longestPalindromicSubstringDef <- impl
-    (input, expected)              <- data
+    (input, check)                 <- data
   do
     assert:
-      expected.contains(longestPalindromicSubstringDef(input))
+      check.contains(longestPalindromicSubstringDef(input))

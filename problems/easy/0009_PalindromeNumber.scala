@@ -52,12 +52,12 @@ def palindromeNumberFullReverse(x: Int): Boolean =
 def palindromeNumberCompareDigits(x: Int): Boolean =
   if x < 0 then false
   else
-    var rem = x
+    var rem     = x
     var divisor = 1
     while rem / divisor >= 10 do divisor *= 10
     while rem > 0 do
       if rem / divisor != rem % 10 then return false
-      rem = (rem % divisor) / 10
+      rem = (rem              % divisor) / 10
       divisor /= 100
     true
 
@@ -66,8 +66,7 @@ def palindromeNumberTailrec(x: Int): Boolean =
   else
     @tailrec
     def loop(remaining: Int, reversedHalf: Int): Boolean =
-      if remaining <= reversedHalf then
-        remaining == reversedHalf || remaining == reversedHalf / 10
+      if remaining <= reversedHalf then remaining == reversedHalf || remaining == reversedHalf / 10
       else loop(remaining / 10, reversedHalf * 10 + remaining % 10)
 
     loop(x, 0)
@@ -80,17 +79,16 @@ def palindromeNumberFold(x: Int): Boolean =
       else Some((remaining % 10, remaining / 10))
     digits.foldLeft(List.empty[Int])((reversed, digit) => digit :: reversed) == digits
 
-
 @main def palindromeNumber(): Unit =
 
   val data = List(
-    121  -> true,
-    -121 -> false,
-    10   -> false,
-    0    -> true,
-    1221 -> true,
-    1231 -> false,
-    12321 -> true,
+    121        -> true,
+    -121       -> false,
+    10         -> false,
+    0          -> true,
+    1221       -> true,
+    1231       -> false,
+    12321      -> true,
     2147447412 -> true,
     2147483647 -> false
   )
@@ -105,7 +103,7 @@ def palindromeNumberFold(x: Int): Boolean =
 
   for
     palindromeNumberDef <- impl
-    (input, expected) <- data
+    (input, check)      <- data
   do
     assert:
-      palindromeNumberDef(input) == expected
+      palindromeNumberDef(input) == check

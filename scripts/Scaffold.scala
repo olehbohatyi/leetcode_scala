@@ -21,9 +21,11 @@ enum Difficulty:
 
 object Difficulty:
   def parse(s: String): Either[String, Difficulty] =
-    values.find(_.dir == s.toLowerCase).toRight(
-      s"difficulty must be one of: ${values.map(_.dir).mkString(", ")}; got: $s"
-    )
+    values
+      .find(_.dir == s.toLowerCase)
+      .toRight(
+        s"difficulty must be one of: ${values.map(_.dir).mkString(", ")}; got: $s"
+      )
 
 case class Config(
     difficulty: Difficulty,
@@ -77,6 +79,11 @@ val DefaultTemplate: String =
     |// TODO: paste the constraints from the LeetCode problem.
 
     |// One function per approach, named {{name}}<Approach>. e.g. `{{name}}Tailrec` or `{{name}}Loop`.
+    |// Prefer multiline guards like:
+    |// if cond then
+    |//   body
+    |// else
+    |//   fallback
     |def {{name}}Approach(input: Any): Any = ???
 
     |@main def {{name}}(): Unit =
@@ -142,12 +149,16 @@ def parseArgs(args: List[String]): Either[String, Config] =
     case arg :: tail                     => loop(tail, raw.copy(positional = raw.positional :+ arg))
 
   for
-    raw <- loop(args, Raw())
-    _ <- Either.cond(raw.positional.length >= 3, (), "difficulty, number and title are required")
+    raw        <- loop(args, Raw())
+    _          <- Either.cond(raw.positional.length >= 3, (), "difficulty, number and title are required")
     difficulty <- Difficulty.parse(raw.positional(0))
-    number <- raw.positional(1).toIntOption.filter(_ > 0).toRight(
-      s"number must be a positive integer; got: ${raw.positional(1)}"
-    )
+    number     <- raw
+      .positional(1)
+      .toIntOption
+      .filter(_ > 0)
+      .toRight(
+        s"number must be a positive integer; got: ${raw.positional(1)}"
+      )
     title = raw.positional.drop(2).mkString(" ").trim
     _ <- Either.cond(words(title).nonEmpty, (), "title must contain letters or digits")
   yield Config(difficulty, number, title, raw.template, raw.force, raw.dryRun)
@@ -171,7 +182,8 @@ def fail(msg: String): Nothing =
         .getOrElse(fail(s"cannot read template: $path"))
     case None => DefaultTemplate
 
-  val destDir  = Paths.get("").toAbsolutePath.normalize.resolve("problems").resolve(cfg.difficulty.dir)
+  val destDir =
+    Paths.get("").toAbsolutePath.normalize.resolve("problems").resolve(cfg.difficulty.dir)
   val destPath = destDir.resolve(f"${cfg.number}%04d_${toPascalCase(cfg.title)}.scala")
   val content  = render(template, cfg)
 

@@ -29,8 +29,9 @@ import scala.annotation.tailrec
 
 def reverseIntegerAsString(input: Int): Int =
   val reversed = input.toString.reverse
-  val result = if input < 0 then "-" + reversed.dropRight(1) else reversed
-  try result.toInt catch case _: NumberFormatException => 0
+  val result   = if input < 0 then "-" + reversed.dropRight(1) else reversed
+  try result.toInt
+  catch case _: NumberFormatException => 0
 
 def reverseIntegerTailrec(input: Int): Int =
   @tailrec
@@ -45,7 +46,7 @@ def reverseIntegerTailrec(input: Int): Int =
   loop(input, 0)
 
 def reverseIntegerLoop(input: Int): Int =
-  var x = input
+  var x      = input
   var result = 0
   while x != 0 do
     val pop = x % 10
@@ -58,10 +59,10 @@ def reverseIntegerLoop(input: Int): Int =
 @main def reverseInteger(): Unit =
 
   val data = List(
-    123 -> 321,
-    -123 -> -321,
-    120 -> 21,
-    0 -> 0,
+    123        -> 321,
+    -123       -> -321,
+    120        -> 21,
+    0          -> 0,
     1534236469 -> 0
   )
 
@@ -73,7 +74,7 @@ def reverseIntegerLoop(input: Int): Int =
 
   for
     reverseIntegerDef <- impl
-    (input, expected) <- data
+    (input, check)    <- data
   do
     assert:
-      reverseIntegerDef(input) == expected
+      reverseIntegerDef(input) == check

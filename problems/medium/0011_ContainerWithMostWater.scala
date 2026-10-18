@@ -30,8 +30,8 @@ import scala.annotation.tailrec
 // 0 <= height(i) <= 10^4
 
 def containerWithMostWaterWhile(height: Array[Int]): Int =
-  var l = 0
-  var r = height.length - 1
+  var l   = 0
+  var r   = height.length - 1
   var res = 0
 
   while l < r do
@@ -40,7 +40,7 @@ def containerWithMostWaterWhile(height: Array[Int]): Int =
         val max = lh * (r - l)
         res = if res < max then max else res
         l += 1
-      case (_, rh)             =>
+      case (_, rh) =>
         val max = rh * (r - l)
         res = if res < max then max else res
         r -= 1
@@ -52,9 +52,9 @@ def containerWithMostWaterTailrec(height: Array[Int]): Int =
   def loop(l: Int, r: Int, res: Int): Int =
     if l >= r then res
     else
-      val lh = height(l)
-      val rh = height(r)
-      val max = (if lh < rh then lh else rh) * (r - l)
+      val lh      = height(l)
+      val rh      = height(r)
+      val max     = (if lh < rh then lh else rh) * (r - l)
       val nextRes = if res < max then max else res
       if lh < rh then loop(l + 1, r, nextRes)
       else loop(l, r - 1, nextRes)
@@ -62,13 +62,13 @@ def containerWithMostWaterTailrec(height: Array[Int]): Int =
   loop(0, height.length - 1, 0)
 
 def containerWithMostWaterSkipShorter(height: Array[Int]): Int =
-  var l = 0
-  var r = height.length - 1
+  var l   = 0
+  var r   = height.length - 1
   var res = 0
 
   while l < r do
-    val lh = height(l)
-    val rh = height(r)
+    val lh  = height(l)
+    val rh  = height(r)
     val max = (if lh < rh then lh else rh) * (r - l)
     if max > res then res = max
 
@@ -99,7 +99,7 @@ def containerWithMostWaterSkipShorter(height: Array[Int]): Int =
 
   for
     containerWithMostWaterDef <- impl
-    (height, expected)        <- data
+    (height, check)           <- data
   do
     assert:
-      containerWithMostWaterDef(height) == expected
+      containerWithMostWaterDef(height) == check
