@@ -63,38 +63,29 @@ val DefaultTemplate: String =
     |// Difficulty: {{difficulty}}
     |// https://leetcode.com/problems/{{slug}}/
 
-    |// TODO: paste the problem statement, examples and constraints from the LeetCode problem.
+    |// TODO: paste the exact problem description from LeetCode here.
 
-    |// Example 1:
+    |// TODO: paste the exact examples from LeetCode here.
+    |// Example 1..:
     |// Input:
     |// Output:
     |// Explanation:
 
-    |// Example 2:
-    |// Input:
-    |// Output:
-    |// Explanation:
-    
+    |// TODO: paste the exact constraints from LeetCode here.
     |// Constraints:
-    |// TODO: paste the constraints from the LeetCode problem.
 
-    |// One function per approach, named {{name}}<Approach>. e.g. `{{name}}Tailrec` or `{{name}}Loop`.
-    |// Prefer multiline guards like:
-    |// if cond then
-    |//   body
-    |// else
-    |//   fallback
-    |def {{name}}Approach(input: Any): Any = ???
+    |// TODO: One function per approach, named {{name}}<Impl>. e.g. `{{name}}Tailrec` or `{{name}}Loop`.
+    |def {{name}}Impl(input: ???): ??? = ???
 
     |@main def {{name}}(): Unit =
 
     |  val data = List(
-    |    // input -> expected
-    |    0 -> 0
+    |    // input -> check
+    |    ??? -> ???
     |  )
 
     |  val impl = List(
-    |    {{name}}Approach
+    |    {{name}}Impl
     |  )
 
     |  for
