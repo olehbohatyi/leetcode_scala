@@ -74,7 +74,7 @@ val DefaultTemplate: String =
     |// TODO: paste the exact constraints from LeetCode here.
     |// Constraints:
 
-    |// TODO: One function per approach, named {{name}}<Impl>. e.g. `{{name}}Tailrec` or `{{name}}Loop`.
+    |// TODO: one function per approach, named {{name}}<Impl>. e.g. `{{name}}Tailrec` or `{{name}}Loop`.
     |def {{name}}Impl(input: ???): ??? = ???
 
     |@main def {{name}}(): Unit =
