@@ -66,6 +66,24 @@ def longestCommonPrefixIndex(strs: Array[String]): String =
           while min != str.substring(0, min.length) do min = min.substring(0, min.length - 1)
         min
 
+def longestCommonPrefixTailrec(strs: Array[String]): String =
+  if strs.isEmpty then ""
+  else
+    val srt = strs.sortBy(_.length)
+    val min = srt.head
+
+    @tailrec
+    def loop(pre: String, rem: List[String]): String =
+      if pre.isEmpty then ""
+      else
+        rem match
+          case Nil          => pre
+          case head :: tail =>
+            if head.substring(0, pre.length) == pre then loop(pre, tail)
+            else loop(pre.substring(0, pre.length - 1), rem)
+
+    loop(min, srt.tail.toList)
+
 @main def longestCommonPrefix(): Unit =
 
   val data = List(
@@ -87,7 +105,8 @@ def longestCommonPrefixIndex(strs: Array[String]): String =
     longestCommonPrefixForWhile,
     longestCommonPrefixForZip,
     longestCommonPrefixFold,
-    longestCommonPrefixIndex
+    longestCommonPrefixIndex,
+    longestCommonPrefixTailrec
   )
 
   for
