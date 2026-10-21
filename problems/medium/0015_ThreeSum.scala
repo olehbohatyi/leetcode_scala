@@ -51,21 +51,94 @@ def threeSumWhile(nums: Array[Int]): List[List[Int]] =
 
   numsSet.toList
 
-  // -1, 0, 1, 2, -1, -4
-  // -1, 0 k = 1, seen.cont(1) == false => next iter => add 0
-  // -1, 1 k = 0
+def threeSumTwoPointers(nums: Array[Int]): List[List[Int]] =
+  val sorted   = nums.sorted
+  val triplets = scala.collection.mutable.ListBuffer[List[Int]]()
+  var i        = 0
+
+  while i < sorted.length - 2 do
+    if i == 0 || sorted(i) != sorted(i - 1) then
+      var left  = i + 1
+      var right = sorted.length - 1
+
+      while left < right do
+        val sum = sorted(i) + sorted(left) + sorted(right)
+        if sum == 0 then
+          triplets += List(sorted(i), sorted(left), sorted(right))
+          left += 1
+          right -= 1
+          while left < right && sorted(left) == sorted(left - 1) do left += 1
+          while left < right && sorted(right) == sorted(right + 1) do right -= 1
+        else if sum < 0 then left += 1
+        else right -= 1
+    i += 1
+
+  triplets.toList
+
+def threeSumHashSet(nums: Array[Int]): List[List[Int]] =
+  val triplets = scala.collection.mutable.Set[List[Int]]()
+  var i        = 0
+
+  while i < nums.length - 2 do
+    val seen = scala.collection.mutable.Set[Int]()
+    var j    = i + 1
+
+    while j < nums.length do
+      val k = -(nums(i) + nums(j))
+      if seen.contains(k) then triplets += List(nums(i), nums(j), k).sorted
+      seen += nums(j)
+      j += 1
+    i += 1
+
+  triplets.toList
+
+def threeSumCounts(nums: Array[Int]): List[List[Int]] =
+  val counts   = nums.groupMapReduce(identity)(_ => 1)(_ + _)
+  val values   = counts.keys.toArray.sorted
+  val triplets = scala.collection.mutable.ListBuffer[List[Int]]()
+  var i        = 0
+
+  while i < values.length do
+    var j = i
+    while j < values.length do
+      val a = values(i)
+      val b = values(j)
+      val c = -(a + b)
+
+      if c >= b && counts.contains(c) then
+        val enoughOccurrences =
+          if a == b && b == c then counts(a) >= 3
+          else if a == b then counts(a) >= 2
+          else if b == c then counts(b) >= 2
+          else true
+
+        if enoughOccurrences then triplets += List(a, b, c)
+      j += 1
+    i += 1
+
+  triplets.toList
 
 @main def threeSum(): Unit =
 
   val data = List(
-    Array(-1, 0, 1, 2, -1, -4) -> List(List(-1, -1, 2), List(-1, 0, 1)),
-    Array(0, 1, 1)             -> List.empty[List[Int]],
-    Array(0, 0, 0)             -> List(List(0, 0, 0)),
-    Array(1, -1, -1, 0, 0)     -> List(List(-1, 0, 1))
+    Array(-1, 0, 1, 2, -1, -4)    -> List(List(-1, -1, 2), List(-1, 0, 1)),
+    Array(0, 1, 1)                -> List.empty[List[Int]],
+    Array(0, 0, 0)                -> List(List(0, 0, 0)),
+    Array(1, -1, -1, 0, 0)        -> List(List(-1, 0, 1)),
+    Array(-2, 0, 0, 2, 2)         -> List(List(-2, 0, 2)),
+    Array(-4, -2, -2, 0, 2, 2, 4) -> List(
+      List(-4, 0, 4),
+      List(-4, 2, 2),
+      List(-2, -2, 4),
+      List(-2, 0, 2)
+    )
   )
 
   val impl = List(
-    threeSumWhile
+    threeSumWhile,
+    threeSumTwoPointers,
+    threeSumHashSet,
+    threeSumCounts
   )
 
   for
