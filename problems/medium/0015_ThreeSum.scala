@@ -33,7 +33,27 @@
 // 3 <= nums.length <= 3000
 // -10^5 <= nums[i] <= 10^5
 
-def threeSumImpl(nums: Array[Int]): List[List[Int]] = ???
+def threeSumWhile(nums: Array[Int]): List[List[Int]] =
+  val numsSet = scala.collection.mutable.Set[List[Int]]()
+  val seenMap = scala.collection.mutable.Map[Int, Int]()
+  var i       = 0
+  while i < nums.length do
+    var j = i + 1
+    while j < nums.length do
+      seenMap
+        .get(-(nums(i) + nums(j)))
+        .fold(seenMap += (nums(j) -> j))(k =>
+          if k != i && k != j then numsSet += List(nums(i), nums(j), nums(k)).sorted
+          else seenMap += (nums(j) -> j)
+        )
+      j += 1
+    i += 1
+
+  numsSet.toList
+
+  // -1, 0, 1, 2, -1, -4
+  // -1, 0 k = 1, seen.cont(1) == false => next iter => add 0
+  // -1, 1 k = 0
 
 @main def threeSum(): Unit =
 
@@ -45,7 +65,7 @@ def threeSumImpl(nums: Array[Int]): List[List[Int]] = ???
   )
 
   val impl = List(
-    threeSumImpl
+    threeSumWhile
   )
 
   for
