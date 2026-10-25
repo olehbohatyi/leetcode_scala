@@ -25,6 +25,27 @@
 // -1000 <= nums[i] <= 1000
 // -10^4 <= target <= 10^4
 
+def threeSumClosestBruteForce(nums: Array[Int], target: Int): Int =
+  var closest  = nums(0) + nums(1) + nums(2)
+  var bestDiff = math.abs(closest - target)
+  var i        = 0
+
+  while i < nums.length - 2 do
+    var j = i + 1
+    while j < nums.length - 1 do
+      var k = j + 1
+      while k < nums.length do
+        val sum  = nums(i) + nums(j) + nums(k)
+        val diff = math.abs(sum - target)
+        if diff < bestDiff then
+          closest = sum
+          bestDiff = diff
+        k += 1
+      j += 1
+    i += 1
+
+  closest
+
 def threeSumClosestTwoPointers(nums: Array[Int], target: Int): Int =
   val sorted  = nums.sorted
   var closest = sorted(0) + sorted(1) + sorted(2)
@@ -45,6 +66,27 @@ def threeSumClosestTwoPointers(nums: Array[Int], target: Int): Int =
 
   closest
 
+def threeSumClosestScan(nums: Array[Int], target: Int): Int =
+  val sorted  = nums.sorted
+  var closest = sorted(0) + sorted(1) + sorted(2)
+  var i       = 0
+
+  while i < sorted.length - 2 do
+    var left  = i + 1
+    var right = sorted.length - 1
+
+    while left < right do
+      val sum  = sorted(i) + sorted(left) + sorted(right)
+      val diff = math.abs(sum - target)
+      if diff < math.abs(closest - target) then closest = sum
+
+      if sum < target then left += 1
+      else if sum > target then right -= 1
+      else return sum
+    i += 1
+
+  closest
+
 @main def threeSumClosest(): Unit =
 
   val data = List(
@@ -56,7 +98,9 @@ def threeSumClosestTwoPointers(nums: Array[Int], target: Int): Int =
   )
 
   val impl = List(
-    threeSumClosestTwoPointers
+    threeSumClosestBruteForce,
+    threeSumClosestTwoPointers,
+    threeSumClosestScan
   )
 
   for
