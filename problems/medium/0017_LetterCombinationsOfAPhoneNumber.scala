@@ -1,5 +1,7 @@
 #!/usr/bin/env -S scala shebang
 
+import scala.annotation.tailrec
+
 // 17. Letter Combinations of a Phone Number
 // Difficulty: Medium
 // https://leetcode.com/problems/letter-combinations-of-a-phone-number/
@@ -51,6 +53,19 @@ def letterCombinationsOfAPhoneNumberForLoop(input: String): List[String] =
 
     res.toList
 
+def letterCombinationsOfAPhoneNumberTailrec(input: String): List[String] =
+  @tailrec
+  def loop(chars: List[Char], combs: List[String]): List[String] =
+    chars match
+      case Nil                      => combs
+      case digit :: remainingDigits =>
+        val next = combs.flatMap: comb =>
+          phoneNumberLetters(digit).map(comb + _)
+        loop(remainingDigits, next)
+
+  if input.isEmpty then List.empty[String]
+  else loop(input.toList, List(""))
+
 @main def letterCombinationsOfAPhoneNumber(): Unit =
 
   val data = List(
@@ -88,7 +103,8 @@ def letterCombinationsOfAPhoneNumberForLoop(input: String): List[String] =
   )
 
   val impl = List(
-    letterCombinationsOfAPhoneNumberForLoop
+    letterCombinationsOfAPhoneNumberForLoop,
+    letterCombinationsOfAPhoneNumberTailrec
   )
 
   for
