@@ -35,24 +35,6 @@ private val phoneNumberLetters = Map(
   '9' -> List("w", "x", "y", "z")
 )
 
-def letterCombinationsOfAPhoneNumberForLoop(input: String): List[String] =
-  if input.isEmpty then List.empty[String]
-  else if input.length == 1 then phoneNumberLetters(input.head)
-  else
-    val start = phoneNumberLetters(input.head)
-    val res   = scala.collection.mutable.ArrayBuffer[String]()
-    for l1 <- start do
-      if input.tail.length == 1 then for l2 <- phoneNumberLetters(input.tail.head) do res += l1 + l2
-      else if input.tail.length == 2 then
-        for l2 <- phoneNumberLetters(input.tail.head) do
-          for l3 <- phoneNumberLetters(input.tail.tail.head) do res += l1 + l2 + l3
-      else
-        for l2 <- phoneNumberLetters(input.tail.head) do
-          for l3 <- phoneNumberLetters(input.tail.tail.head) do
-            for l4 <- phoneNumberLetters(input.tail.tail.tail.head) do res += l1 + l2 + l3 + l4
-
-    res.toList
-
 def letterCombinationsOfAPhoneNumberTailrec(input: String): List[String] =
   @tailrec
   def loop(chars: List[Char], combs: List[String]): List[String] =
@@ -66,11 +48,44 @@ def letterCombinationsOfAPhoneNumberTailrec(input: String): List[String] =
   if input.isEmpty then List.empty[String]
   else loop(input.toList, List(""))
 
+def letterCombinationsOfAPhoneNumberBacktracking(input: String): List[String] =
+  val combinations = scala.collection.mutable.ListBuffer[String]()
+
+  def build(index: Int, prefix: String): Unit =
+    if index == input.length then combinations += prefix
+    else
+      phoneNumberLetters(input(index)).foreach: letter =>
+        build(index + 1, prefix + letter)
+
+  if input.nonEmpty then build(0, "")
+  combinations.toList
+
+def letterCombinationsOfAPhoneNumberRecursive(input: String): List[String] =
+  def build(index: Int): List[String] =
+    if index == input.length then List("")
+    else
+      for
+        letter <- phoneNumberLetters(input(index))
+        suffix <- build(index + 1)
+      yield letter + suffix
+
+  if input.isEmpty then List.empty[String]
+  else build(0)
+
+def letterCombinationsOfAPhoneNumberFold(input: String): List[String] =
+  if input.isEmpty then List.empty[String]
+  else
+    input.foldLeft(List("")): (combinations, digit) =>
+      combinations.flatMap: combination =>
+        phoneNumberLetters(digit).map(combination + _)
+
 @main def letterCombinationsOfAPhoneNumber(): Unit =
 
   val data = List(
+    ""    -> List.empty[String],
     "23"  -> List("ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"),
     "2"   -> List("a", "b", "c"),
+    "79"  -> List("pw", "px", "py", "pz", "qw", "qx", "qy", "qz", "rw", "rx", "ry", "rz", "sw", "sx", "sy", "sz"),
     "234" -> List(
       "adg",
       "adh",
@@ -103,8 +118,10 @@ def letterCombinationsOfAPhoneNumberTailrec(input: String): List[String] =
   )
 
   val impl = List(
-    letterCombinationsOfAPhoneNumberForLoop,
-    letterCombinationsOfAPhoneNumberTailrec
+    letterCombinationsOfAPhoneNumberTailrec,
+    letterCombinationsOfAPhoneNumberBacktracking,
+    letterCombinationsOfAPhoneNumberRecursive,
+    letterCombinationsOfAPhoneNumberFold
   )
 
   for
