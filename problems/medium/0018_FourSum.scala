@@ -25,22 +25,41 @@
 // - -10^9 <= nums[i] <= 10^9
 // - -10^9 <= target <= 10^9
 
-def fourSumImpl(input: ???): ??? = ???
+def fourSumPointers(nums: Array[Int], target: Int): List[List[Int]] =
+  val sorted = nums.sorted
+  val n      = sorted.length
+  var result = Set[List[Int]]()
+
+  for i <- 0 until n - 3 do
+    for j <- i + 1 until n - 2 do
+      var left  = j + 1
+      var right = n - 1
+
+      while left < right do
+        val sum = sorted(i) + sorted(j) + sorted(left) + sorted(right)
+        if sum == target then
+          result += List(sorted(i), sorted(j), sorted(left), sorted(right)).sorted
+          left += 1
+          right -= 1
+        else if sum < target then left += 1
+        else right -= 1
+
+  result.toList
 
 @main def fourSum(): Unit =
 
   val data = List(
-    // input -> check
-    ??? -> ???
+    (Array(1, 0, -1, 0, -2, 2), 0) -> List(List(-2, -1, 1, 2), List(-2, 0, 0, 2), List(-1, 0, 0, 1)),
+    (Array(2, 2, 2, 2, 2), 8)      -> List(List(2, 2, 2, 2))
   )
 
   val impl = List(
-    fourSumImpl
+    fourSumPointers
   )
 
   for
-    problem4SumDef <- impl
-    (input, check) <- data
+    problem4SumDef            <- impl
+    ((nums -> target), check) <- data
   do
     assert:
-      problem4SumDef(input) == check
+      problem4SumDef(nums, target) == check
